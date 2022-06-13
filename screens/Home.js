@@ -2,7 +2,7 @@ import React from 'react';
 import {Text} from 'react-native';
 
 const Home = () => {
-  return <Text>Home</Text>;
+  return <Text>Homee</Text>;
 };
 
 export default Home;
