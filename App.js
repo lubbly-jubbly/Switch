@@ -1,8 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
@@ -19,6 +18,8 @@ import Home from './screens/Home';
 import Finances from './screens/Finances';
 import Profile from './screens/Profile';
 import Login from './screens/Login';
+import Signup from './screens/Signup';
+
 import {
   useDimensions,
   useDeviceOrientation,
@@ -26,8 +27,11 @@ import {
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const RotaStack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 
 const RotaStackScreen = () => {
@@ -47,14 +51,44 @@ const RotaStackScreen = () => {
 };
 
 const App = () => {
-  return (
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  return isSignedIn ? (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={({route}) => ({
+          tabBarIcon: ({focused, color, size}) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'home-outline' : 'home-outline';
+            } else if (route.name === 'Rota') {
+              iconName = focused ? 'calendar-outline' : 'calendar-outline';
+            } else if (route.name === 'Finances') {
+              iconName = focused ? 'cash-outline' : 'cash-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person-outline' : 'person-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}>
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Rota" component={RotaStackScreen} />
-        <Tab.Screen name="Login" component={Login} />
+        <Tab.Screen name="Finances" component={Signup} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
+    </NavigationContainer>
+  ) : (
+    <NavigationContainer>
+      <AuthStack.Navigator
+        initialRouteName="Login"
+        screenOptions={{headerStyle: {backgroundColor: 'coral'}}}>
+        <AuthStack.Screen name="Login" component={Login} />
+        <AuthStack.Screen name="Signup" component={Signup} />
+      </AuthStack.Navigator>
     </NavigationContainer>
   );
 };

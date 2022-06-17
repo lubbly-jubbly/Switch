@@ -1,16 +1,18 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import COLOURS from '../conts/colours';
 
 const Home = () => {
   return (
     <View>
-      <Text>
-        <AntDesign
-          name="customerservice"
-          style={{color: 'red', fontSize: 50}}
-        />
-      </Text>
+      <Text>Welcome back, Libby!</Text>
+      <Text>Your shifts this week:</Text>
+      <Icon
+        name="email-outline"
+        style={{color: COLOURS.darkBlue, fontSize: 22, marginRight: 10}}
+      />
     </View>
   );
 };

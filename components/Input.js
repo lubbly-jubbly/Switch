@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 import COLOURS from '../conts/colours';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const Input = ({
   label,
   iconName,
@@ -26,6 +27,10 @@ const Input = ({
             alignItems: 'center',
           },
         ]}>
+        <Icon
+          name={iconName}
+          style={{color: COLOURS.darkBlue, fontSize: 22, marginRight: 10}}
+        />
         <TextInput
           autoCorrect={false}
           onFocus={() => {
@@ -37,7 +42,13 @@ const Input = ({
           style={{color: COLOURS.darkBlue, flex: 1}}
           {...props}
         />
-        {password}
+        {password && (
+          <Icon
+            onPress={() => setHidePassword(!hidePassword)}
+            name={hidePassword ? 'eye-outline' : 'eye-off-outline'}
+            style={{color: COLOURS.darkBlue, fontSize: 22}}
+          />
+        )}
       </View>
       {error && (
         <Text style={{marginTop: 7, color: COLOURS.red, fontSize: 12}}>
@@ -60,6 +71,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 15,
     borderWidth: 0.5,
+    justifyContent: 'flex-start',
   },
 });
 
