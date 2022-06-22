@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,6 +19,7 @@ import Finances from './screens/Finances';
 import Profile from './screens/Profile';
 import Login from './screens/Login';
 import Signup from './screens/Signup';
+import ForgotPassword from './screens/ForgotPassword';
 
 import {
   useDimensions,
@@ -28,8 +29,11 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+Ionicons.loadFont();
+import auth from '@react-native-firebase/auth';
 
 const RotaStack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
@@ -50,9 +54,53 @@ const RotaStackScreen = () => {
   );
 };
 
+const HomeStackScreen = () => {
+  return (
+    <HomeStack.Navigator
+      initialRouteName="Home"
+      screenOptions={{headerStyle: {backgroundColor: 'coral'}}}>
+      <HomeStack.Screen name="Home" component={Home} />
+      <HomeStack.Screen name="Request time off" component={RequestTimeOff} />
+      <HomeStack.Screen
+        name="Day"
+        component={Day}
+        options={({route}) => ({title: route.params.day})}
+      />
+    </HomeStack.Navigator>
+  );
+};
+
 const App = () => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  return isSignedIn ? (
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing) return null;
+
+  if (!user) {
+    return (
+      <NavigationContainer>
+        <AuthStack.Navigator
+          initialRouteName="Login"
+          screenOptions={{headerStyle: {backgroundColor: 'coral'}}}>
+          <AuthStack.Screen name="Login" component={Login} />
+          <AuthStack.Screen name="Signup" component={Signup} />
+          <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
+        </AuthStack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  return (
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({route}) => ({
@@ -75,20 +123,11 @@ const App = () => {
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
         })}>
-        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Rota" component={RotaStackScreen} />
-        <Tab.Screen name="Finances" component={Signup} />
+        <Tab.Screen name="Finances" component={Finances} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
-    </NavigationContainer>
-  ) : (
-    <NavigationContainer>
-      <AuthStack.Navigator
-        initialRouteName="Login"
-        screenOptions={{headerStyle: {backgroundColor: 'coral'}}}>
-        <AuthStack.Screen name="Login" component={Login} />
-        <AuthStack.Screen name="Signup" component={Signup} />
-      </AuthStack.Navigator>
     </NavigationContainer>
   );
 };

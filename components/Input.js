@@ -2,11 +2,13 @@ import React from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 import COLOURS from '../conts/colours';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+Icon.loadFont();
 const Input = ({
   label,
   iconName,
   error,
   password,
+  value,
   onFocus = () => {},
   ...props
 }) => {
@@ -45,7 +47,7 @@ const Input = ({
         {password && (
           <Icon
             onPress={() => setHidePassword(!hidePassword)}
-            name={hidePassword ? 'eye-outline' : 'eye-off-outline'}
+            name={hidePassword ? 'eye-off-outline' : 'eye-outline'}
             style={{color: COLOURS.darkBlue, fontSize: 22}}
           />
         )}

@@ -1,16 +1,54 @@
 import React from 'react';
-import {View, Text, SafeAreaView, Keyboard, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Keyboard,
+  Alert,
+  StyleSheet,
+} from 'react-native';
 import COLOURS from '../conts/colours';
-import {useForm, Controller} from 'react-hook-form';
-import {useNavigation} from '@react-navigation/native';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Loader from '../components/Loader';
+import auth from '@react-native-firebase/auth';
 
 const Login = ({navigation}) => {
   const [inputs, setInputs] = React.useState({email: '', password: ''});
   const [errors, setErrors] = React.useState({});
   const [loading, setLoading] = React.useState(false);
+
+  const handleLogin = () => {
+    auth()
+      .signInWithEmailAndPassword(inputs.email, inputs.password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log('Logged in with:', user.email);
+      })
+      .catch(error => {
+        if (error.code === 'auth/invalid-email') {
+          handleError('Please enter a valid email address.', 'email');
+        }
+
+        if (error.code === 'auth/user-not-found') {
+          handleError(
+            'This email address is not associated with an account.',
+            'email',
+          );
+        }
+        if (error.code === 'auth/wrong-password') {
+          handleError('Incorrect email or password.', 'password');
+        }
+
+        if (error.code === 'auth/too-many-requests') {
+          handleError(
+            'Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.',
+            'password',
+          );
+        }
+        console.error(error);
+      });
+  };
 
   const validate = async () => {
     Keyboard.dismiss();
@@ -24,34 +62,34 @@ const Login = ({navigation}) => {
       isValid = false;
     }
     if (isValid) {
-      login();
+      handleLogin();
     }
   };
 
-  const login = () => {
-    setLoading(true);
-    setTimeout(async () => {
-      setLoading(false);
-      let userData = await AsyncStorage.getItem('userData');
-      if (userData) {
-        userData = JSON.parse(userData);
-        if (
-          inputs.email == userData.email &&
-          inputs.password == userData.password
-        ) {
-          navigation.navigate('HomeScreen');
-          AsyncStorage.setItem(
-            'userData',
-            JSON.stringify({...userData, loggedIn: true}),
-          );
-        } else {
-          Alert.alert('Error', 'Invalid Details');
-        }
-      } else {
-        Alert.alert('Error', 'User does not exist');
-      }
-    }, 3000);
-  };
+  // const login = () => {
+  //   setLoading(true);
+  //   setTimeout(async () => {
+  //     setLoading(false);
+  //     let userData = await AsyncStorage.getItem('userData');
+  //     if (userData) {
+  //       userData = JSON.parse(userData);
+  //       if (
+  //         inputs.email == userData.email &&
+  //         inputs.password == userData.password
+  //       ) {
+  //         navigation.navigate('HomeScreen');
+  //         AsyncStorage.setItem(
+  //           'userData',
+  //           JSON.stringify({...userData, loggedIn: true}),
+  //         );
+  //       } else {
+  //         Alert.alert('Error', 'Invalid Details');
+  //       }
+  //     } else {
+  //       Alert.alert('Error', 'User does not exist');
+  //     }
+  //   }, 3000);
+  // };
 
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
@@ -70,12 +108,14 @@ const Login = ({navigation}) => {
         <Text style={{color: COLOURS.grey, fontSize: 18, marginVertical: 10}}>
           Enter Your Details to Login
         </Text>
+
         <View style={{marginVertical: 20}}>
           <Input
             onChangeText={text => handleOnchange(text, 'email')}
             onFocus={() => handleError(null, 'email')}
             iconName="email-outline"
             label="Email"
+            value={inputs.email}
             placeholder="Enter your email address"
             error={errors.email}
           />
@@ -86,23 +126,39 @@ const Login = ({navigation}) => {
             label="Password"
             placeholder="Enter your password"
             error={errors.password}
+            value={inputs.password}
             password
           />
           <Button title="Log In" onPress={validate} />
-          <Text
-            onPress={() => navigation.navigate('Signup')}
-            style={{
-              color: COLOURS.black,
-              fontWeight: 'bold',
-              textAlign: 'center',
-              fontSize: 16,
-            }}>
-            Don't have account ? Register
-          </Text>
+
+          <View style={{alignItems: 'center'}}>
+            <Text
+              style={[styles.link, {paddingBottom: 20}]}
+              onPress={() => navigation.navigate('ForgotPassword')}>
+              Forgot Password
+            </Text>
+            <Text style={{fontSize: 16}}>
+              {' '}
+              Don't have an account?{' '}
+              <Text
+                onPress={() => navigation.navigate('Signup')}
+                style={styles.link}>
+                Sign up here
+              </Text>
+            </Text>
+          </View>
         </View>
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  link: {
+    color: '#0000EE',
+    fontSize: 16,
+    textDecorationLine: 'underline',
+  },
+});
 
 export default Login;

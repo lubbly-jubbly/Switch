@@ -1,20 +1,27 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLOURS from '../conts/colours';
+import Shift from '../components/Shift';
 
-const Home = () => {
+const Home = ({navigation}) => {
   return (
-    <View>
-      <Text>Welcome back, Libby!</Text>
+    <View style={{backgroundColor: COLOURS.white, flex: 1}}>
+      <Text>Welcome back, libby!</Text>
       <Text>Your shifts this week:</Text>
-      <Icon
-        name="email-outline"
-        style={{color: COLOURS.darkBlue, fontSize: 22, marginRight: 10}}
-      />
+      <View style={styles.shiftContainer}>
+        <Shift navigation={navigation} day={new Date()} />
+        <Shift navigation={navigation} day={new Date()} />
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  shiftContainer: {
+    marginHorizontal: 20,
+  },
+});
 
 export default Home;
