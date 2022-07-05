@@ -2,16 +2,47 @@ import React, {useState} from 'react';
 import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
 import COLOURS from '../conts/colours';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {format} from 'date-fns/format';
+import {formatISO} from 'date-fns';
 
-const DatePicker = ({label, timeRequired}) => {
+const DatePicker = ({label, timeRequired, dateToParent}) => {
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+
+  async function onChangeTime(event, value) {
+    await setTime(value);
+    dateToParent(formatDate());
+  }
+
+  async function onChangeDate(event, value) {
+    await setDate(value);
+    dateToParent(formatDate());
+  }
+
+  formatDate = () => {
+    const mydate =
+      formatISO(date, {representation: 'date'}) +
+      ' ' +
+      formatISO(time, {representation: 'time'});
+    return mydate;
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <View style={{flexDirection: 'row'}}>
         {timeRequired ? (
-          <DateTimePicker value={new Date()} mode="time" style={{width: 100}} />
+          <DateTimePicker
+            value={time}
+            mode="time"
+            style={{width: 100}}
+            onChange={onChangeTime}
+          />
         ) : null}
-        <DateTimePicker value={new Date()} style={{width: 90}} />
+        <DateTimePicker
+          value={date}
+          style={{width: 120}}
+          onChange={onChangeDate}
+        />
       </View>
     </View>
   );
@@ -21,7 +52,7 @@ const styles = StyleSheet.create({
   label: {
     marginVertical: 5,
     fontSize: 14,
-    color: COLOURS.grey,
+    color: COLOURS.blue,
   },
   container: {
     height: 55,
@@ -33,6 +64,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 10,
   },
 });
 

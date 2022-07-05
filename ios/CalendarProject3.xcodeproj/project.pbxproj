@@ -8,14 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* CalendarProject3Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* CalendarProject3Tests.m */; };
+		08E9FEEF02704B02BEACD6F9 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 221FC9FD15B544F98518F04A /* AntDesign.ttf */; };
+		0F3F666FE9114AAB8E1CA8EB /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5935FABACD154BC8BD06BE27 /* Octicons.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		3D16648F285CECC000F2CE52 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D16648E285CECC000F2CE52 /* GoogleService-Info.plist */; };
+		1844E091AA444809B58DF874 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17B8867CE7834212B12C3C19 /* FontAwesome5_Solid.ttf */; };
+		28F7C7A0B04A4BF7962FD50A /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BBC2FC3FF3C742198ABCFB4F /* EvilIcons.ttf */; };
+		2AEFEAEE4BED41A1840C60AB /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F938A909F4FE484AAF264E15 /* Foundation.ttf */; };
+		2D3A46B6EEB6405390B1EA98 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6DDFD07FD29E443D9AB375A8 /* Feather.ttf */; };
 		3D1C8C012858CD7C0096DA06 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 3D1C8C002858CD7C0096DA06 /* Fonts */; };
+		3D8F122A906E41D2A16E3612 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 193DF3DFFDB74EE28CBEFE86 /* MaterialCommunityIcons.ttf */; };
+		3DD6A0F82865D88800F2E9EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3DD6A0F72865D88700F2E9EF /* GoogleService-Info.plist */; };
+		43DD684706E1458FA8CA00BB /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D2348A5C9684A818DAD49C5 /* SimpleLineIcons.ttf */; };
+		4BAE8C11D9454E7BBFF91AD1 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FC03933E274E48839DFA1BBE /* MaterialIcons.ttf */; };
+		50F136446149EA42240C43B2 /* Pods_CalendarProject3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BACCADD0C8B8150565463538 /* Pods_CalendarProject3.framework */; };
+		530B24CDD0A74C4D9ECCDC1F /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D4EFD33EC4542189B79E633 /* Zocial.ttf */; };
+		7AF47C9C3E944D059CC1C6A4 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EA51E11D64E04661B703C87A /* Fontisto.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		959B0F1B25031E8BC2F814D8 /* Pods_CalendarProject3_CalendarProject3Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4DBCE41C6D835480F8B19E /* Pods_CalendarProject3_CalendarProject3Tests.framework */; };
-		CF1273CF3DE2C9FB958FD526 /* Pods_CalendarProject3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F23E53A7AC21764570B67287 /* Pods_CalendarProject3.framework */; };
+		A421BB1F311843ACBE66B141 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0D48D62E792046759A1ADCB8 /* FontAwesome5_Regular.ttf */; };
+		AD4F81F43933412290155DA7 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BBA6287B9FF54034B83EBCE5 /* FontAwesome.ttf */; };
+		CECC974BC191BFD9C34BCD89 /* Pods_CalendarProject3_CalendarProject3Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95618DB33098F66E2AC6B42F /* Pods_CalendarProject3_CalendarProject3Tests.framework */; };
+		D5A840B63F314A08BFBC6173 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1B2E1D7F40D249FD97A59FCA /* FontAwesome5_Brands.ttf */; };
+		F3A1EEA8C3344E5C848ED514 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8898EF2DAC1D487EBE247AC7 /* Ionicons.ttf */; };
+		FA28CF02FA7248BB9C77CDF7 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A04EC897021F40588ADBB97B /* Entypo.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,22 +48,38 @@
 		00E356EE1AD99517003FC87E /* CalendarProject3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CalendarProject3Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* CalendarProject3Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalendarProject3Tests.m; sourceTree = "<group>"; };
+		0D48D62E792046759A1ADCB8 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* CalendarProject3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CalendarProject3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = CalendarProject3/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = CalendarProject3/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = CalendarProject3/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = CalendarProject3/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = CalendarProject3/main.m; sourceTree = "<group>"; };
+		17B8867CE7834212B12C3C19 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
+		193DF3DFFDB74EE28CBEFE86 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		1B2E1D7F40D249FD97A59FCA /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
+		221FC9FD15B544F98518F04A /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
+		2D4EFD33EC4542189B79E633 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-CalendarProject3.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CalendarProject3.debug.xcconfig"; path = "Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3.debug.xcconfig"; sourceTree = "<group>"; };
-		3D16648E285CECC000F2CE52 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3D1C8C002858CD7C0096DA06 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
-		4D4DBCE41C6D835480F8B19E /* Pods_CalendarProject3_CalendarProject3Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CalendarProject3_CalendarProject3Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DD6A0F72865D88700F2E9EF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4D2348A5C9684A818DAD49C5 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-CalendarProject3.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CalendarProject3.release.xcconfig"; path = "Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3.release.xcconfig"; sourceTree = "<group>"; };
+		5935FABACD154BC8BD06BE27 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-CalendarProject3-CalendarProject3Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CalendarProject3-CalendarProject3Tests.debug.xcconfig"; path = "Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		6DDFD07FD29E443D9AB375A8 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = CalendarProject3/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8898EF2DAC1D487EBE247AC7 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-CalendarProject3-CalendarProject3Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CalendarProject3-CalendarProject3Tests.release.xcconfig"; path = "Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests.release.xcconfig"; sourceTree = "<group>"; };
+		95618DB33098F66E2AC6B42F /* Pods_CalendarProject3_CalendarProject3Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CalendarProject3_CalendarProject3Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A04EC897021F40588ADBB97B /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		BACCADD0C8B8150565463538 /* Pods_CalendarProject3.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CalendarProject3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBA6287B9FF54034B83EBCE5 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		BBC2FC3FF3C742198ABCFB4F /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
+		EA51E11D64E04661B703C87A /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F23E53A7AC21764570B67287 /* Pods_CalendarProject3.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CalendarProject3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F938A909F4FE484AAF264E15 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
+		FC03933E274E48839DFA1BBE /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				959B0F1B25031E8BC2F814D8 /* Pods_CalendarProject3_CalendarProject3Tests.framework in Frameworks */,
+				CECC974BC191BFD9C34BCD89 /* Pods_CalendarProject3_CalendarProject3Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,7 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF1273CF3DE2C9FB958FD526 /* Pods_CalendarProject3.framework in Frameworks */,
+				50F136446149EA42240C43B2 /* Pods_CalendarProject3.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +119,29 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		05E868E394B640C7B1F6CF50 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				221FC9FD15B544F98518F04A /* AntDesign.ttf */,
+				A04EC897021F40588ADBB97B /* Entypo.ttf */,
+				BBC2FC3FF3C742198ABCFB4F /* EvilIcons.ttf */,
+				6DDFD07FD29E443D9AB375A8 /* Feather.ttf */,
+				BBA6287B9FF54034B83EBCE5 /* FontAwesome.ttf */,
+				1B2E1D7F40D249FD97A59FCA /* FontAwesome5_Brands.ttf */,
+				0D48D62E792046759A1ADCB8 /* FontAwesome5_Regular.ttf */,
+				17B8867CE7834212B12C3C19 /* FontAwesome5_Solid.ttf */,
+				EA51E11D64E04661B703C87A /* Fontisto.ttf */,
+				F938A909F4FE484AAF264E15 /* Foundation.ttf */,
+				8898EF2DAC1D487EBE247AC7 /* Ionicons.ttf */,
+				193DF3DFFDB74EE28CBEFE86 /* MaterialCommunityIcons.ttf */,
+				FC03933E274E48839DFA1BBE /* MaterialIcons.ttf */,
+				5935FABACD154BC8BD06BE27 /* Octicons.ttf */,
+				4D2348A5C9684A818DAD49C5 /* SimpleLineIcons.ttf */,
+				2D4EFD33EC4542189B79E633 /* Zocial.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* CalendarProject3 */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,8 +160,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				F23E53A7AC21764570B67287 /* Pods_CalendarProject3.framework */,
-				4D4DBCE41C6D835480F8B19E /* Pods_CalendarProject3_CalendarProject3Tests.framework */,
+				BACCADD0C8B8150565463538 /* Pods_CalendarProject3.framework */,
+				95618DB33098F66E2AC6B42F /* Pods_CalendarProject3_CalendarProject3Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -121,13 +176,14 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				3D16648E285CECC000F2CE52 /* GoogleService-Info.plist */,
+				3DD6A0F72865D88700F2E9EF /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* CalendarProject3 */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* CalendarProject3Tests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				05E868E394B640C7B1F6CF50 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -165,7 +221,7 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */,
+				1781DBE958D74630141F70FB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -187,8 +243,8 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				726D0EF8A8E8B4101A55E325 /* [CP-User] [RNFB] Core Configuration */,
+				AE839CAC7777EDD36A19B0BF /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -205,7 +261,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				LastUpgradeCheck = 1340;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -248,9 +304,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D1C8C012858CD7C0096DA06 /* Fonts in Resources */,
-				3D16648F285CECC000F2CE52 /* GoogleService-Info.plist in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				08E9FEEF02704B02BEACD6F9 /* AntDesign.ttf in Resources */,
+				FA28CF02FA7248BB9C77CDF7 /* Entypo.ttf in Resources */,
+				28F7C7A0B04A4BF7962FD50A /* EvilIcons.ttf in Resources */,
+				2D3A46B6EEB6405390B1EA98 /* Feather.ttf in Resources */,
+				AD4F81F43933412290155DA7 /* FontAwesome.ttf in Resources */,
+				D5A840B63F314A08BFBC6173 /* FontAwesome5_Brands.ttf in Resources */,
+				A421BB1F311843ACBE66B141 /* FontAwesome5_Regular.ttf in Resources */,
+				1844E091AA444809B58DF874 /* FontAwesome5_Solid.ttf in Resources */,
+				7AF47C9C3E944D059CC1C6A4 /* Fontisto.ttf in Resources */,
+				2AEFEAEE4BED41A1840C60AB /* Foundation.ttf in Resources */,
+				F3A1EEA8C3344E5C848ED514 /* Ionicons.ttf in Resources */,
+				3D8F122A906E41D2A16E3612 /* MaterialCommunityIcons.ttf in Resources */,
+				4BAE8C11D9454E7BBFF91AD1 /* MaterialIcons.ttf in Resources */,
+				0F3F666FE9114AAB8E1CA8EB /* Octicons.ttf in Resources */,
+				3DD6A0F82865D88800F2E9EF /* GoogleService-Info.plist in Resources */,
+				43DD684706E1458FA8CA00BB /* SimpleLineIcons.ttf in Resources */,
+				530B24CDD0A74C4D9ECCDC1F /* Zocial.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,21 +343,21 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
+		1781DBE958D74630141F70FB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		726D0EF8A8E8B4101A55E325 /* [CP-User] [RNFB] Core Configuration */ = {
@@ -323,6 +395,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		AE839CAC7777EDD36A19B0BF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3/Pods-CalendarProject3-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -343,23 +432,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CalendarProject3-CalendarProject3Tests/Pods-CalendarProject3-CalendarProject3Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -422,7 +494,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = CalendarProject3Tests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -446,7 +518,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = CalendarProject3Tests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -562,7 +634,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -626,7 +698,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

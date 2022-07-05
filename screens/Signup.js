@@ -16,7 +16,7 @@ import Input from '../components/Input';
 import Loader from '../components/Loader';
 import auth from '@react-native-firebase/auth';
 import RadioButtons from '../components/RadioButtons';
-
+import {addUserDetails} from '../apiService';
 const Signup = ({navigation}) => {
   const [inputs, setInputs] = React.useState({
     email: '',
@@ -26,14 +26,17 @@ const Signup = ({navigation}) => {
   });
   const [errors, setErrors] = React.useState({});
   const [loading, setLoading] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
+  const childToParent = isAdmin => {
+    setIsAdmin(isAdmin);
+  };
   const handleSignUp = () => {
     auth()
       .createUserWithEmailAndPassword(inputs.email, inputs.password)
-      .then(res => {
-        res.user.updateProfile({
-          displayName: inputs.fullname,
-        });
+      .then(() => {
+        const user = auth().currentUser;
+        addUserDetails(inputs.firstname, inputs.lastname, user.uid, isAdmin);
         console.log('User account created & signed in!');
       })
       .catch(error => {
@@ -65,8 +68,12 @@ const Signup = ({navigation}) => {
       isValid = false;
     }
 
-    if (!inputs.fullname) {
-      handleError('Please enter your full name.', 'fullname');
+    if (!inputs.firstname) {
+      handleError('Please enter your first name.', 'firstname');
+      isValid = false;
+    }
+    if (!inputs.lastname) {
+      handleError('Please enter your last name.', 'lastname');
       isValid = false;
     }
 
@@ -127,13 +134,23 @@ const Signup = ({navigation}) => {
           />
 
           <Input
-            onChangeText={text => handleOnchange(text, 'fullname')}
-            onFocus={() => handleError(null, 'fullname')}
+            onChangeText={text => handleOnchange(text, 'firstname')}
+            onFocus={() => handleError(null, 'firstname')}
             iconName="account-outline"
-            label="Full Name"
-            placeholder="Enter your full name"
-            error={errors.fullname}
-            value={inputs.fullname}
+            label="First Name"
+            placeholder="Enter your first name"
+            error={errors.firstname}
+            value={inputs.firstname}
+          />
+
+          <Input
+            onChangeText={text => handleOnchange(text, 'lastname')}
+            onFocus={() => handleError(null, 'lastname')}
+            iconName="account-outline"
+            label="Last Name"
+            placeholder="Enter your last name"
+            error={errors.lastname}
+            value={inputs.lastname}
           />
 
           <Input
@@ -156,7 +173,7 @@ const Signup = ({navigation}) => {
             value={inputs.password}
             password
           />
-          <RadioButtons />
+          <RadioButtons childToParent={childToParent} />
 
           <Button title="Register" onPress={validate} />
           <View style={{flex: 1, alignItems: 'center'}}>

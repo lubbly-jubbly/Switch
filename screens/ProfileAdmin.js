@@ -5,7 +5,8 @@ import {firebase} from '@react-native-firebase/database';
 import EditTeam from './EditTeam';
 import COLOURS from '../conts/colours';
 import {FONTS, SIZES} from '../conts/theme';
-const Profile = ({navigation}) => {
+
+const ProfileAdmin = ({navigation}) => {
   const user = auth().currentUser;
 
   const database = firebase
@@ -38,9 +39,13 @@ const Profile = ({navigation}) => {
   return (
     <SafeAreaView
       style={{backgroundColor: COLOURS.white, flex: 1, padding: SIZES.padding}}>
+      <Button
+        title="Edit Team"
+        onPress={() => navigation.navigate('Edit Team')}
+      />
       <Button title="Sign out" onPress={handleSignOut} />
     </SafeAreaView>
   );
 };
 
-export default Profile;
+export default ProfileAdmin;

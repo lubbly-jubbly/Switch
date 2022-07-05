@@ -74,6 +74,7 @@ const style = StyleSheet.create({
     paddingHorizontal: 15,
     borderWidth: 0.5,
     justifyContent: 'flex-start',
+    borderRadius: 10,
   },
 });
 

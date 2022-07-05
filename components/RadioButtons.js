@@ -2,12 +2,17 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {RadioButton, Text} from 'react-native-paper';
 import COLOURS from '../conts/colours';
-const RadioButtons = () => {
+const RadioButtons = ({childToParent}) => {
   const [value, setValue] = React.useState('first');
 
   return (
     <View style={styles.container}>
-      <RadioButton.Group onValueChange={value => setValue(value)} value={value}>
+      <RadioButton.Group
+        onValueChange={value => {
+          setValue(value);
+          childToParent(value == 'first');
+        }}
+        value={value}>
         <RadioButton.Item
           label="I want to create a new team"
           value="first"
@@ -28,6 +33,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOURS.light,
     marginTop: 20,
+    borderRadius: 10,
   },
   label: {
     marginVertical: 5,
