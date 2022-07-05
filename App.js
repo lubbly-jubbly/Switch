@@ -115,8 +115,8 @@ const App = () => {
   const HomeStackScreen = () => {
     if (userInfo.isAdmin) {
       return (
-        <HomeStack.Navigator initialRouteName="Homee">
-          <HomeStack.Screen name="Homee" component={HomeAdmin} />
+        <HomeStack.Navigator initialRouteName="Home">
+          <HomeStack.Screen name="Home" component={HomeAdmin} />
           <HomeStack.Screen
             name="Request time off"
             component={RequestTimeOff}
