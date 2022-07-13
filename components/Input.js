@@ -1,13 +1,18 @@
 import React from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 import COLOURS from '../conts/colours';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
+import {APPSTYLES} from '../conts/theme';
 Icon.loadFont();
+Entypo.loadFont();
 const Input = ({
   label,
   iconName,
+  iconFocused,
   error,
   password,
+  entypo,
   value,
   onFocus = () => {},
   ...props
@@ -16,23 +21,48 @@ const Input = ({
   const [isFocused, setIsFocused] = React.useState(false);
   return (
     <View style={{marginBottom: 20}}>
-      <Text style={style.label}>{label}</Text>
+      <Text style={APPSTYLES.inputLabel}>{label}</Text>
       <View
         style={[
           style.inputContainer,
+          APPSTYLES.itemContainer,
           {
             borderColor: error
               ? COLOURS.red
               : isFocused
-              ? COLOURS.darkBlue
+              ? COLOURS.blue
               : COLOURS.light,
             alignItems: 'center',
           },
         ]}>
-        <Icon
-          name={iconName}
-          style={{color: COLOURS.darkBlue, fontSize: 22, marginRight: 10}}
-        />
+        {entypo ? (
+          <Entypo
+            name={iconName}
+            style={{
+              color: isFocused ? COLOURS.blue : COLOURS.paleGreen,
+              fontSize: 22,
+              marginRight: 10,
+            }}
+          />
+        ) : isFocused ? (
+          <Icon
+            name={iconFocused}
+            style={{
+              color: COLOURS.blue,
+              fontSize: 22,
+              marginRight: 10,
+            }}
+          />
+        ) : (
+          <Icon
+            name={iconName}
+            style={{
+              color: isFocused ? COLOURS.blue : COLOURS.paleGreen,
+              fontSize: 22,
+              marginRight: 10,
+            }}
+          />
+        )}
         <TextInput
           autoCorrect={false}
           onFocus={() => {
@@ -41,14 +71,17 @@ const Input = ({
           }}
           onBlur={() => setIsFocused(false)}
           secureTextEntry={hidePassword}
-          style={{color: COLOURS.darkBlue, flex: 1}}
+          style={{color: COLOURS.blue, flex: 1}}
           {...props}
         />
         {password && (
           <Icon
             onPress={() => setHidePassword(!hidePassword)}
             name={hidePassword ? 'eye-off-outline' : 'eye-outline'}
-            style={{color: COLOURS.darkBlue, fontSize: 22}}
+            style={{
+              color: isFocused ? COLOURS.blue : COLOURS.paleGreen,
+              fontSize: 22,
+            }}
           />
         )}
       </View>
@@ -62,19 +95,11 @@ const Input = ({
 };
 
 const style = StyleSheet.create({
-  label: {
-    marginVertical: 5,
-    fontSize: 14,
-    color: COLOURS.grey,
-  },
   inputContainer: {
-    height: 55,
-    backgroundColor: COLOURS.light,
+    // height: 55,
     flexDirection: 'row',
-    paddingHorizontal: 15,
     borderWidth: 0.5,
     justifyContent: 'flex-start',
-    borderRadius: 10,
   },
 });
 

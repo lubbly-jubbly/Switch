@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
-import {SafeAreaView, Text, StyleSheet} from 'react-native';
-import Button from '../components/Button';
+import {View, Text, StyleSheet, Alert} from 'react-native';
+import {Dialog, Portal, Paragraph} from 'react-native-paper';
+import BigButton from '../components/BigButton';
 import {
   CodeField,
   Cursor,
@@ -10,6 +11,11 @@ import {
 import auth from '@react-native-firebase/auth';
 import {handleSignOut} from '../authService';
 import {joinTeamWithJoinCode} from '../apiService';
+import COLOURS from '../conts/colours';
+import {APPSTYLES} from '../conts/theme';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+Icon.loadFont();
 const CELL_COUNT = 6;
 
 const EnterJoinCode = () => {
@@ -19,68 +25,84 @@ const EnterJoinCode = () => {
     value,
     setValue,
   });
+  const [visible, setVisible] = React.useState(false);
 
-  // const [errors, setErrors] = React.useState({});
+  const changeDialog = () => setVisible(!visible);
+
   const user = auth().currentUser;
 
-  const handleCodeSubmit = () => {
-    joinTeamWithJoinCode(user.uid, value);
-  };
-
-  // const validate = async () => {
-  //   Keyboard.dismiss();
-  //   let isValid = true;
-  //   if (!inputs.teamName) {
-  //     handleError('Please enter the name of your business.', 'teamName');
-  //     isValid = false;
-  //   }
-  //   if (isValid) {
-  //     handleCreateTeam();
-  //   }
-  // };
-  // const handleOnchange = (text, input) => {
-  //   setInputs(prevState => ({...prevState, [input]: text}));
+  // const handleCodeSubmit = () => {
+  //   joinTeamWithJoinCode(user.uid, value);
   // };
 
-  // const handleError = (error, input) => {
-  //   setErrors(prevState => ({...prevState, [input]: error}));
-  // };
   return (
-    <SafeAreaView style={styles.root}>
-      <Text style={styles.title}>Enter your team's code.</Text>
-      <CodeField
-        ref={ref}
-        {...props}
-        // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-        value={value}
-        onChangeText={setValue}
-        cellCount={CELL_COUNT}
-        rootStyle={styles.codeFieldRoot}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        renderCell={({index, symbol, isFocused}) => (
-          <Text
-            key={index}
-            style={[styles.cell, isFocused && styles.focusCell]}
-            onLayout={getCellOnLayoutHandler(index)}>
-            {symbol || (isFocused ? <Cursor /> : null)}
-          </Text>
-        )}
-      />
+    <View>
+      {/* <Portal>
+        <Dialog visible={visible} onDismiss={changeDialog}>
+          <Dialog.Content>
+            <Paragraph>heyyyy</Paragraph>
+          </Dialog.Content>
+        </Dialog>
+      </Portal> */}
+      <View style={styles.root}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <Text style={APPSTYLES.inputLabel}>Enter your team's join code.</Text>
+          <Pressable
+            onPress={() =>
+              Alert.alert(
+                "Your team's admin can find this information in .....",
+              )
+            }>
+            <Icon
+              name={'help-outline'}
+              style={{
+                color: COLOURS.blue,
+                fontSize: 22,
+                marginRight: 10,
+              }}
+            />
+          </Pressable>
+        </View>
+        <View style={APPSTYLES.itemContainer}>
+          <CodeField
+            ref={ref}
+            {...props}
+            // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+            value={value}
+            onChangeText={setValue}
+            cellCount={CELL_COUNT}
+            rootStyle={styles.codeFieldRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({index, symbol, isFocused}) => (
+              <Text
+                key={index}
+                style={[styles.cell, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {symbol || (isFocused ? <Cursor /> : null)}
+              </Text>
+            )}
+          />
+        </View>
 
-      <Button title="Enter" onPress={handleCodeSubmit} />
-      <Button title="signout" onPress={handleSignOut} />
-    </SafeAreaView>
+        {/* <Button title="Enter" onPress={handleCodeSubmit} /> */}
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  root: {flex: 1, padding: 20},
-  title: {textAlign: 'center', fontSize: 30},
-  codeFieldRoot: {marginTop: 20},
+  // root: {padding: 20},
+  title: {fontSize: 15, color: COLOURS.grey},
+  // codeFieldRoot: {marginTop: 20},
   cell: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     lineHeight: 38,
     fontSize: 24,
     borderWidth: 2,

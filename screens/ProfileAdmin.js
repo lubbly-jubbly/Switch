@@ -43,6 +43,10 @@ const ProfileAdmin = ({navigation}) => {
         title="Edit Team"
         onPress={() => navigation.navigate('Edit Team')}
       />
+      <Button
+        title="Edit shift structure"
+        onPress={() => navigation.navigate('Choose Shifts')}
+      />
       <Button title="Sign out" onPress={handleSignOut} />
     </SafeAreaView>
   );

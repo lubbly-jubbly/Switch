@@ -9,11 +9,14 @@ import {
   ScrollView,
 } from 'react-native';
 import {Item} from 'react-native-paper/lib/typescript/components/List/List';
-import {database, userRef} from '../apiService';
+import {database} from '../apiService';
 import {submitUser} from '../apiService';
 import {FONTS, SIZES, APPSTYLES} from '../conts/theme';
 import COLOURS from '../conts/colours';
 import {getUserInfo, getUserTeam} from '../userInfo';
+import auth from '@react-native-firebase/auth';
+import {UserName} from '../components/UserName';
+import {EMAIL, PHONE} from '../conts/icons';
 
 const EditTeam = ({navigation}) => {
   const [Id, setId] = useState();
@@ -46,7 +49,7 @@ const EditTeam = ({navigation}) => {
   };
 
   const deleteUser = Item => {
-    database()
+    database
       .ref('users/' + Item.Id)
       .remove()
       .then(() => {})
@@ -66,6 +69,9 @@ const EditTeam = ({navigation}) => {
     // console.log(getUserTeam());
     // const userInfo = await userRef.once('value');
     // const teamid = userInfo.val().team;
+    const user = auth().currentUser;
+    const userid = user.uid;
+    const userRef = database.ref('/users/' + userid);
 
     userRef.once('value').then(snapshot => {
       setTeam(snapshot.child('team').val());
@@ -81,7 +87,11 @@ const EditTeam = ({navigation}) => {
             setUsers([]);
 
             snapshot.forEach(function (childSnapshot) {
-              setUsers(users => [...users, childSnapshot.val()]);
+              if (childSnapshot.val().isAdmin) {
+                setUsers(users => [childSnapshot.val(), ...users]);
+              } else {
+                setUsers(users => [...users, childSnapshot.val()]);
+              }
             });
           });
     });
@@ -101,7 +111,11 @@ const EditTeam = ({navigation}) => {
         setUsers([]);
 
         snapshot.forEach(function (childSnapshot) {
-          setUsers(users => [...users, childSnapshot.val()]);
+          if (childSnapshot.val().isAdmin) {
+            setUsers(users => [childSnapshot.val(), ...users]);
+          } else {
+            setUsers(users => [...users, childSnapshot.val()]);
+          }
         });
       });
     const childRemovedListener = userRef.on('child_removed', snapshot => {
@@ -162,10 +176,32 @@ const EditTeam = ({navigation}) => {
       {users.map((item, index) => (
         <View style={styles.itemContainer}>
           <View style={styles.infoContainer}>
-            <Text style={FONTS.h3}>
-              {item.firstname} {item.lastname}
-            </Text>
-            {item.isAdmin ? <Text>Admin</Text> : <Text>Employee</Text>}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <UserName
+                name={item.firstname + ' ' + item.lastname}
+                colour={item.colour}
+              />
+
+              {item.isAdmin ? <Text>Admin</Text> : <Text>Employee</Text>}
+            </View>
+            <Text>Weekly hours: {item.hours}</Text>
+            {item.phone !== undefined ? (
+              <View style={styles.individualContactContainer}>
+                <PHONE />
+                <Text style={styles.individualContact}>{item.phone}</Text>
+              </View>
+            ) : null}
+            {item.phone !== undefined ? (
+              <View style={styles.individualContactContainer}>
+                <EMAIL />
+                <Text style={styles.individualContact}>{item.email}</Text>
+              </View>
+            ) : null}
           </View>
           <View style={styles.btnContainer}>
             <Button
@@ -198,6 +234,14 @@ const styles = StyleSheet.create({
   },
   infoContainer: {},
   btnContainer: {},
+
+  individualContactContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  individualContact: {
+    marginLeft: 7,
+  },
 });
 
 export default EditTeam;

@@ -1,7 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, Text} from 'react-native';
 import COLOURS from '../conts/colours';
-const Button = ({title, onPress = () => {}}) => {
+const BigButton = ({title, onPress = () => {}}) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -21,4 +21,4 @@ const Button = ({title, onPress = () => {}}) => {
   );
 };
 
-export default Button;
+export default BigButton;

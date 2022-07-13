@@ -11,7 +11,9 @@ const RotaPage = ({navigation}) => {
       <Rota navigation={navigation} />
       <Button
         title="Request time off"
-        onPress={() => navigation.navigate('Request time off')}></Button>
+        onPress={() => navigation.navigate('Request time off')}
+      />
+      <Button title="Create Rota" />
     </SafeAreaView>
   );
 };

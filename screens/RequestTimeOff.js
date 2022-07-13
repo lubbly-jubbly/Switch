@@ -11,7 +11,7 @@ import {
 import COLOURS from '../conts/colours';
 import {useForm, Controller} from 'react-hook-form';
 import Input from '../components/Input';
-import Button from '../components/Button';
+import BigButton from '../components/BigButton';
 import Toggle from '../components/Toggle';
 import RepeatPicker from '../components/RepeatPicker';
 import DatePicker from '../components/DatePicker';
@@ -83,7 +83,7 @@ const RequestTimeOff = ({navigation}) => {
               value={inputs.notes}
               onChangeText={text => handleOnchange(text, 'notes')}
             />
-            <Button title="Submit Request" onPress={() => handleSubmit()} />
+            <BigButton title="Submit Request" onPress={() => handleSubmit()} />
           </View>
         </View>
       </ScrollView>

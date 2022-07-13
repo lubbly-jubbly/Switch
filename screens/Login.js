@@ -8,10 +8,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import COLOURS from '../conts/colours';
-import Button from '../components/Button';
+import BigButton from '../components/BigButton';
 import Input from '../components/Input';
 import Loader from '../components/Loader';
 import auth from '@react-native-firebase/auth';
+import {FONTS} from '../conts/theme';
 
 const Login = ({navigation}) => {
   const [inputs, setInputs] = React.useState({email: '', password: ''});
@@ -54,11 +55,11 @@ const Login = ({navigation}) => {
     Keyboard.dismiss();
     let isValid = true;
     if (!inputs.email) {
-      handleError('Please input email', 'email');
+      handleError('Please enter your email address.', 'email');
       isValid = false;
     }
     if (!inputs.password) {
-      handleError('Please input password', 'password');
+      handleError('Please enter your password.', 'password');
       isValid = false;
     }
     if (isValid) {
@@ -102,18 +103,15 @@ const Login = ({navigation}) => {
     <SafeAreaView style={{backgroundColor: COLOURS.white, flex: 1}}>
       <Loader visible={loading} />
       <View style={{paddingTop: 50, paddingHorizontal: 20}}>
-        <Text style={{color: COLOURS.black, fontSize: 40, fontWeight: 'bold'}}>
-          Log In
-        </Text>
-        <Text style={{color: COLOURS.grey, fontSize: 18, marginVertical: 10}}>
-          Enter Your Details to Login
-        </Text>
+        <Text style={FONTS.h1}>Welcome back!</Text>
+        <Text style={FONTS.h2}>Enter Your Details to log in.</Text>
 
         <View style={{marginVertical: 20}}>
           <Input
             onChangeText={text => handleOnchange(text, 'email')}
             onFocus={() => handleError(null, 'email')}
-            iconName="email-outline"
+            iconName="mail-outline"
+            iconFocused="mail"
             label="Email"
             value={inputs.email}
             placeholder="Enter your email address"
@@ -122,14 +120,15 @@ const Login = ({navigation}) => {
           <Input
             onChangeText={text => handleOnchange(text, 'password')}
             onFocus={() => handleError(null, 'password')}
-            iconName="lock-outline"
+            iconName="lock-closed-outline"
+            iconFocused="lock-closed"
             label="Password"
             placeholder="Enter your password"
             error={errors.password}
             value={inputs.password}
             password
           />
-          <Button title="Log In" onPress={validate} />
+          <BigButton title="Log In" onPress={validate} />
 
           <View style={{alignItems: 'center'}}>
             <Text
@@ -139,11 +138,11 @@ const Login = ({navigation}) => {
             </Text>
             <Text style={{fontSize: 16}}>
               {' '}
-              Don't have an account?{' '}
+              First time here?{' '}
               <Text
                 onPress={() => navigation.navigate('Signup')}
                 style={styles.link}>
-                Sign up here
+                Create an account
               </Text>
             </Text>
           </View>

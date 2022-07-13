@@ -11,18 +11,21 @@ import {
 } from 'react-native';
 
 import COLOURS from '../conts/colours';
-import Button from '../components/Button';
+import BigButton from '../components/BigButton';
 import Input from '../components/Input';
 import Loader from '../components/Loader';
 import auth from '@react-native-firebase/auth';
 import RadioButtons from '../components/RadioButtons';
 import {addUserDetails} from '../apiService';
+import {FONTS} from '../conts/theme';
 const Signup = ({navigation}) => {
   const [inputs, setInputs] = React.useState({
     email: '',
-    fullname: '',
+    firstname: '',
+    lastname: '',
     phone: '',
     password: '',
+    hours: '',
   });
   const [errors, setErrors] = React.useState({});
   const [loading, setLoading] = React.useState(false);
@@ -36,7 +39,15 @@ const Signup = ({navigation}) => {
       .createUserWithEmailAndPassword(inputs.email, inputs.password)
       .then(() => {
         const user = auth().currentUser;
-        addUserDetails(inputs.firstname, inputs.lastname, user.uid, isAdmin);
+        addUserDetails(
+          inputs.firstname,
+          inputs.lastname,
+          user.uid,
+          isAdmin,
+          inputs.phone,
+          inputs.email,
+          inputs.hours,
+        );
         console.log('User account created & signed in!');
       })
       .catch(error => {
@@ -116,17 +127,14 @@ const Signup = ({navigation}) => {
       <Loader visible={loading} />
       <ScrollView
         contentContainerStyle={{paddingTop: 50, paddingHorizontal: 20}}>
-        <Text style={{color: COLOURS.black, fontSize: 40, fontWeight: 'bold'}}>
-          Register
-        </Text>
-        <Text style={{color: COLOURS.grey, fontSize: 18, marginVertical: 10}}>
-          Enter Your Details to Register
-        </Text>
+        <Text style={FONTS.h1}>Register</Text>
+        <Text style={FONTS.h2}>Enter Your Details to Register</Text>
         <View style={{marginVertical: 20}}>
           <Input
             onChangeText={text => handleOnchange(text, 'email')}
             onFocus={() => handleError(null, 'email')}
-            iconName="email-outline"
+            iconName="mail-outline"
+            iconFocused="mail"
             label="Email"
             placeholder="Enter your email address"
             error={errors.email}
@@ -136,7 +144,8 @@ const Signup = ({navigation}) => {
           <Input
             onChangeText={text => handleOnchange(text, 'firstname')}
             onFocus={() => handleError(null, 'firstname')}
-            iconName="account-outline"
+            iconName="person-outline"
+            iconFocused="person"
             label="First Name"
             placeholder="Enter your first name"
             error={errors.firstname}
@@ -146,7 +155,8 @@ const Signup = ({navigation}) => {
           <Input
             onChangeText={text => handleOnchange(text, 'lastname')}
             onFocus={() => handleError(null, 'lastname')}
-            iconName="account-outline"
+            iconName="person-outline"
+            iconFocused="person"
             label="Last Name"
             placeholder="Enter your last name"
             error={errors.lastname}
@@ -157,7 +167,8 @@ const Signup = ({navigation}) => {
             keyboardType="numeric"
             onChangeText={text => handleOnchange(text, 'phone')}
             onFocus={() => handleError(null, 'phone')}
-            iconName="phone-outline"
+            iconName="call-outline"
+            iconFocused="call"
             label="Phone Number"
             placeholder="Enter your phone no"
             error={errors.phone}
@@ -166,16 +177,16 @@ const Signup = ({navigation}) => {
           <Input
             onChangeText={text => handleOnchange(text, 'password')}
             onFocus={() => handleError(null, 'password')}
-            iconName="lock-outline"
+            iconName="lock-closed-outline"
+            iconFocused="lock-closed"
             label="Password"
             placeholder="Enter your password"
             error={errors.password}
             value={inputs.password}
             password
           />
-          <RadioButtons childToParent={childToParent} />
 
-          <Button title="Register" onPress={validate} />
+          <BigButton title="Register" onPress={validate} />
           <View style={{flex: 1, alignItems: 'center'}}>
             <Text style={{fontSize: 16}}>
               {' '}
@@ -183,7 +194,7 @@ const Signup = ({navigation}) => {
               <Text
                 onPress={() => navigation.navigate('Login')}
                 style={styles.link}>
-                Login here
+                Log in
               </Text>
             </Text>
           </View>

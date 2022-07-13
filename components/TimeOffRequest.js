@@ -11,13 +11,19 @@ import {
 import {userIsAdmin} from '../apiService';
 import COLOURS from '../conts/colours';
 import {database} from '../apiService';
-import {FONTS} from '../conts/theme';
+import {FONTS, SIZES} from '../conts/theme';
 import format from 'date-fns/format';
 import {changeRequestStatus} from '../apiService';
 import parseISO from 'date-fns/parseISO';
+import isSameDay from 'date-fns/isSameDay';
+import {UserName} from './UserName';
 
 const TimeOffRequest = ({navigation, inputs}) => {
   const [senderName, setSenderName] = useState();
+  const [senderAbbrevName, setSenderAbbrevName] = useState();
+
+  const [senderColour, setSenderColour] = useState();
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleRejectRequest = () => {
@@ -30,6 +36,114 @@ const TimeOffRequest = ({navigation, inputs}) => {
     setModalVisible(!modalVisible);
   };
 
+  function testSwitch(sameDay) {
+    switch (sameDay) {
+      case true:
+        return <Text>Hello</Text>;
+      case false:
+        return <Text>Go away</Text>;
+    }
+  }
+
+  function dateSwitch(sameDay, repeat) {
+    switch (sameDay) {
+      case true:
+        switch (repeat) {
+          case 'never':
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee do MMM') +
+          //   ', ' +
+          //   '\n' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+          case 'monthly':
+            return (
+              <View>
+                <Text style={FONTS.h3}>
+                  {format(parseISO(inputs.starts), 'do')},
+                </Text>
+
+                <Text style={{color: COLOURS.darkGrey}}>
+                  {format(parseISO(inputs.starts), 'p')} -
+                  {format(parseISO(inputs.ends), 'p')}
+                </Text>
+              </View>
+            );
+          case 'fortnightly':
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee') +
+          //   ', ' +
+          //   '\n' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+          case 'weekly':
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee') +
+          //   ', ' +
+          //   '\n' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+          case 'daily':
+          // return (
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+        }
+
+      case false:
+        switch (repeat) {
+          case 'never':
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee do MMM') +
+          //   ' at ' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'eeee do MMM') +
+          //   ' at ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+          case 'monthly':
+          // return (
+          //   format(parseISO(inputs.starts), 'do') +
+          //   ' at ' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   '\n' +
+          //   format(parseISO(inputs.ends), 'do') +
+          //   ' at ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+          case 'fortnightly':
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee') +
+          //   ' at ' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'eeee') +
+          //   ' at ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+          case 'weekly':
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee') +
+          //   ' at ' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'eeee') +
+          //   ' at ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
+        }
+    }
+  }
+
   React.useEffect(() => {
     database
       .ref('/users/' + inputs.sender)
@@ -40,8 +154,13 @@ const TimeOffRequest = ({navigation, inputs}) => {
             ' ' +
             snapshot.child('lastname').val(),
         );
+        setSenderAbbrevName(
+          snapshot.child('firstname').val() +
+            ' ' +
+            snapshot.child('lastname').val()[0],
+        );
+        setSenderColour(snapshot.child('colour').val());
       });
-    console.log(parseISO(inputs.starts));
     return () => {};
   }, []);
 
@@ -62,7 +181,7 @@ const TimeOffRequest = ({navigation, inputs}) => {
               onPress={() => setModalVisible(!modalVisible)}>
               <Text style={styles.textStyle}>Hide Modal</Text>
             </Pressable>
-            <Text style={FONTS.userName}>{senderName}</Text>
+            <UserName name={senderName} colour={senderColour} />
             <Text style={FONTS.p3}>{inputs.reason}</Text>
             <Text>{inputs.starts}</Text>
             <Text>{inputs.ends}</Text>
@@ -86,15 +205,22 @@ const TimeOffRequest = ({navigation, inputs}) => {
       <TouchableOpacity
         style={styles.container}
         onPress={() => setModalVisible(true)}>
-        <View style={styles.infoContainer}>
-          <Text style={FONTS.userName}>{senderName}</Text>
+        {/* <View style={styles.infoContainer}> */}
+        <View style={{flexDirection: 'row'}}>
+          <UserName name={senderAbbrevName} colour={senderColour} />
           <Text style={FONTS.p3}>{inputs.reason}</Text>
         </View>
         <View style={styles.dateContainer}>
-          {/* <Text>From {format(new Date(inputs.starts), 'PPPPpppp')}</Text> */}
-          <Text>until {inputs.ends}</Text>
+          <View>
+            {dateSwitch(
+              isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)),
+              inputs.repeat,
+            )}
+          </View>
           {inputs.allDay ? <Text>All day</Text> : null}
-          <Text>{inputs.repeat}</Text>
+          {inputs.repeat !== 'never' ? (
+            <Text>Repeat: {inputs.repeat}</Text>
+          ) : null}
         </View>
       </TouchableOpacity>
     </View>
@@ -102,10 +228,13 @@ const TimeOffRequest = ({navigation, inputs}) => {
 };
 
 const styles = StyleSheet.create({
+  userNameContainer: {},
+
   container: {
     backgroundColor: COLOURS.light,
+    borderRadius: SIZES.radius,
     marginVertical: 10,
-    flexDirection: 'row',
+    flexDirection: 'column',
     paddingVertical: 10,
   },
   infoContainer: {

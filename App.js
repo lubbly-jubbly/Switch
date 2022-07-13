@@ -38,6 +38,7 @@ import CreateTeam from './screens/CreateTeam';
 import {checkIfInTeam, userIsAdmin} from './apiService';
 import {database} from './apiService';
 import COLOURS from './conts/colours';
+import ChooseShifts from './screens/ChooseShifts';
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -152,6 +153,7 @@ const App = () => {
         <ProfileStack.Navigator initialRouteName="Profile">
           <ProfileStack.Screen name="Profile" component={ProfileAdmin} />
           <ProfileStack.Screen name="Edit Team" component={EditTeam} />
+          <ProfileStack.Screen name="Choose Shifts" component={ChooseShifts} />
         </ProfileStack.Navigator>
       );
     } else {
@@ -208,19 +210,20 @@ const App = () => {
             let iconName;
 
             if (route.name === 'Home') {
-              iconName = focused ? 'home-outline' : 'home-outline';
+              iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'Rota') {
-              iconName = focused ? 'calendar-outline' : 'calendar-outline';
+              iconName = focused ? 'calendar' : 'calendar-outline';
             } else if (route.name === 'Finances') {
-              iconName = focused ? 'cash-outline' : 'cash-outline';
+              iconName = focused ? 'cash' : 'cash-outline';
             } else if (route.name === 'Profile') {
-              iconName = focused ? 'person-outline' : 'person-outline';
+              iconName = focused ? 'person' : 'person-outline';
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: COLOURS.coral,
-          tabBarInactiveTintColor: COLOURS.blue,
+          tabBarActiveTintColor: COLOURS.blue,
+          tabBarInactiveTintColor: COLOURS.paleGreen,
           headerShown: false,
+          tabBarShowLabel: false,
         })}>
         <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Rota" component={RotaStackScreen} />

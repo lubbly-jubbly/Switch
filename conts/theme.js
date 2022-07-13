@@ -46,6 +46,8 @@ export const FONTS = {
   h3: {fontSize: SIZES.h3, lineHeight: 22, fontWeight: '600'},
   h4: {fontSize: SIZES.h4, lineHeight: 22, fontWeight: '500'},
   h5: {fontSize: SIZES.h5, lineHeight: 22, fontWeight: '400'},
+  modalText: {fontSize: SIZES.h3, lineHeight: 22, fontWeight: '600'},
+
   body1: {fontSize: SIZES.body1, lineHeight: 36},
   body2: {fontSize: SIZES.body2, lineHeight: 30},
   body3: {fontSize: SIZES.body3, lineHeight: 22},
@@ -54,15 +56,28 @@ export const FONTS = {
   userName: {fontSize: SIZES.h3, lineHeight: 22, fontWeight: '600'},
 };
 
-export const APPSTYLES = StyleSheet.create({
+export const APPSTYLES = {
   itemContainer: {
     backgroundColor: COLOURS.light,
-    flexDirection: 'column',
     paddingHorizontal: 15,
+    paddingVertical: 15,
     borderRadius: 10,
-    marginVertical: 10,
   },
-});
+
+  modal: {
+    width: 260,
+  },
+
+  inputLabel: {
+    marginVertical: 5,
+    fontSize: 15,
+    color: COLOURS.grey,
+  },
+
+  titleContainer: {
+    marginBottom: 20,
+  },
+};
 
 const customTheme = {COLOURS, SIZES, FONTS};
 

@@ -1,9 +1,10 @@
 import React from 'react';
 import {Text, View, SafeAreaView, Keyboard} from 'react-native';
 import Input from '../components/Input';
-import Button from '../components/Button';
+import BigButton from '../components/BigButton';
 import COLOURS from '../conts/colours';
 import auth from '@react-native-firebase/auth';
+import {FONTS} from '../conts/theme';
 
 const ForgotPassword = () => {
   const [inputs, setInputs] = React.useState({email: ''});
@@ -56,20 +57,22 @@ const ForgotPassword = () => {
   return (
     <SafeAreaView style={{backgroundColor: COLOURS.white, flex: 1}}>
       <View style={{paddingTop: 50, paddingHorizontal: 20}}>
-        <Text style={{color: COLOURS.black, fontSize: 40, fontWeight: 'bold'}}>
-          Reset Password
+        <Text style={FONTS.h1}>Reset your password</Text>
+        <Text style={FONTS.h2}>
+          Enter your email and we'll send you a link to reset your password.
         </Text>
         <View style={{marginVertical: 20}}>
           <Input
             onChangeText={text => handleOnchange(text, 'email')}
             onFocus={() => handleError(null, 'email')}
-            iconName="email-outline"
+            iconName="mail-outline"
+            iconFocused="mail"
             label="Email"
             value={inputs.email}
             placeholder="Enter your email address"
             error={errors.email}
           />
-          <Button title="Send password reset email" onPress={validate} />
+          <BigButton title="Send password reset email" onPress={validate} />
         </View>
       </View>
     </SafeAreaView>

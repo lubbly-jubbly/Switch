@@ -4,6 +4,7 @@ import {firebase} from '@react-native-firebase/database';
 import {generateTeamCode} from './teamCodes';
 import parseISO from 'date-fns/parseISO';
 import formatISO from 'date-fns/formatISO';
+import {USERCOLOURS} from './conts/colours';
 export const database = firebase
   .app()
   .database(
@@ -41,7 +42,7 @@ export const submitUser = (Id, Name, Position) => {
   });
 };
 
-export const addUserDetails = (fname, lname, id, isAdmin) => {
+export const addUserDetails = (fname, lname, id, isAdmin, phone, email) => {
   database
     .ref('/users/')
     .update({
@@ -50,6 +51,9 @@ export const addUserDetails = (fname, lname, id, isAdmin) => {
         lastname: lname,
         isAdmin: isAdmin,
         team: '',
+        Id: id,
+        phone: phone,
+        email: email,
       },
     })
     .then(() => console.log('Data set.'));
@@ -63,14 +67,21 @@ export function checkIfInTeam(user) {
   });
 }
 
-export const assignTeamToUser = (id, teamid) => {
+export async function assignTeamToUser(id, teamid) {
   const userRef = database.ref('/users/' + id);
+
+  const membersRef = database.ref('/teams/' + teamid + '/members/');
+
+  const snapshot = await membersRef.once('value');
+  const numMembers = snapshot.numChildren();
+  const userColour = USERCOLOURS[numMembers - 1];
   userRef
     .update({
       team: teamid,
+      colour: userColour,
     })
     .then(() => console.log('Data set.'));
-};
+}
 
 export const addUserToTeam = (userid, teamid) => {
   const teamRef = database.ref('/teams/' + teamid + '/members/');
@@ -85,7 +96,6 @@ export const joinTeamWithJoinCode = (userid, joinCode) => {
   database
     .ref('/joinCodes/' + joinCode)
     .once('value', snapshot => {
-      console.log(snapshot.val());
       addUserToTeam(userid, snapshot.val());
       assignTeamToUser(userid, snapshot.val());
     })
@@ -97,8 +107,6 @@ export async function userIsAdmin(user) {
   let info = await userRef.once('value');
   console.log('type: ' + typeof info.val().isAdmin);
   return info.val().isAdmin;
-  console.log('in fn ' + info);
-  return info;
 }
 
 // export async function getUserInfo(user) {
@@ -140,6 +148,9 @@ export const addJoinCodeToList = (joinCode, teamid) => {
 };
 
 export async function submitTimeOffRequest(Id, inputs) {
+  const user = auth().currentUser;
+  const userid = user.uid;
+  const userRef = database.ref('/users/' + userid);
   const userInfo = await userRef.once('value');
   const teamid = userInfo.val().team;
 
@@ -194,40 +205,70 @@ export async function changeRequestStatus(status, id) {
   });
 }
 
-export async function getUserInfo(userInfoRetrieved) {
-  const userInfo = {};
-  const snapshot = await userRef.once('value');
-  userInfo = snapshot.val();
-  userInfoRetrieved(userInfo);
-}
-
-// export async function getTimeOffRequests(requestsRetrieved) {
-
-//   const requestsList = [];
-
+// export async function getUserInfo(userInfoRetrieved) {
+//   const userInfo = {};
+//   const snapshot = await userRef.once('value');
+//   userInfo = snapshot.val();
+//   userInfoRetrieved(userInfo);
 // }
 
-// const userRef = database.ref('users/' + user.uid);
-//     userRef.once('value').then(snapshot => {
-//       setUserInfo(snapshot.val());
-//     });
+export async function submitRegularShift(day, inputs) {
+  const userInfo = await userRef.once('value');
+  const teamid = userInfo.val().team;
 
-//     const teamid = userInfo.team;
-//     const requestsRef = database.ref('teams/' + teamid + '/requests/');
+  // database.ref('teams/' + teamid + '/regularShifts/' + day).update({
+  //   [day]: inputs,
+  // });
 
-//     const OnLoadingListener = requestsRef
-//       .orderByChild('status')
-//       .equalTo('pending')
-//       .on('value', snapshot => {
-//         setRequests([]);
+  return new Promise(function (resolve, reject) {
+    let key;
+    key = database //if user doesnt exist in the system,
+      .ref()
+      .push().key;
 
-//         snapshot.forEach(function (childSnapshot) {
-//           setRequests(requests => [...requests, childSnapshot.val()]);
-//         });
-//       });
+    database
+      .ref('teams/' + teamid + '/regularShifts/' + day + '/' + key)
+      .update(Object.assign({}, {Id: key}, inputs))
+      .then(snapshot => {
+        resolve(snapshot);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+}
 
-//     return () => {
-//       setUserInfo({}); // This worked for me
-//       userRef.off('value', OnLoadingListener);
-//     };
-//   }, []);
+export async function getTotalHours() {
+  const user = auth().currentUser;
+  const userid = user.uid;
+  const userRef = database.ref('/users/' + userid);
+  const userInfo = await userRef.once('value');
+  const teamid = userInfo.val().team;
+
+  let totalHrs = 0;
+  const users = await database
+    .ref('/users/')
+    .orderByChild('team')
+    .equalTo(teamid)
+    .once('value');
+
+  users.forEach(function (childSnapshot) {
+    totalHrs += childSnapshot.val().hours;
+  });
+  setTotalHours(totalHrs);
+}
+
+export function submitRota() {
+  database
+    .ref('/users/' + '3yzkuik0pFhS0XobkdDasubGxz42' + '/')
+    .update({
+      firstname: 'bob',
+    })
+    .then(() => console.log('hellooo'));
+}
+
+export function assignColourToUser() {
+  //navigate to user
+  //
+  database.ref();
+}

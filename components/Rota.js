@@ -41,6 +41,7 @@ const Rota = ({navigation}) => {
           console.log('month changed', month);
         }}
         onDayPress={day => {
+          const date = day;
           navigation.navigate('Day', {day: day.dateString});
         }}
         firstDay={1}
