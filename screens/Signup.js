@@ -29,11 +29,10 @@ const Signup = ({navigation}) => {
   });
   const [errors, setErrors] = React.useState({});
   const [loading, setLoading] = React.useState(false);
-  const [isAdmin, setIsAdmin] = React.useState(false);
 
-  const childToParent = isAdmin => {
-    setIsAdmin(isAdmin);
-  };
+  // const childToParent = isAdmin => {
+  //   setIsAdmin(isAdmin);
+  // };
   const handleSignUp = () => {
     auth()
       .createUserWithEmailAndPassword(inputs.email, inputs.password)
@@ -43,10 +42,8 @@ const Signup = ({navigation}) => {
           inputs.firstname,
           inputs.lastname,
           user.uid,
-          isAdmin,
           inputs.phone,
           inputs.email,
-          inputs.hours,
         );
         console.log('User account created & signed in!');
       })

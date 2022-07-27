@@ -65,6 +65,7 @@ const Input = ({
         )}
         <TextInput
           autoCorrect={false}
+          value={value}
           onFocus={() => {
             onFocus();
             setIsFocused(true);

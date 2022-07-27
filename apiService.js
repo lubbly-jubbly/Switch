@@ -42,19 +42,83 @@ export const submitUser = (Id, Name, Position) => {
   });
 };
 
-export const addUserDetails = (fname, lname, id, isAdmin, phone, email) => {
+export const editUserHours = (id, hours) => {
+  database.ref('/users/' + id).update({
+    hours: parseInt(hours),
+  });
+};
+
+export const editUserInfo = (id, inputs) => {
+  database.ref('/users/' + id).update({
+    firstname: inputs.firstname,
+    lastname: inputs.lastname,
+    hours: parseInt(inputs.hours),
+    phone: inputs.phone,
+    email: inputs.email,
+  });
+  firebase.auth().currentUser.updateEmail(inputs.email);
+  this.reauthenticate(currentPassword)
+    .then(() => {
+      var user = firebase.auth().currentUser;
+      user
+        .updateEmail(newEmail)
+        .then(() => {
+          console.log('Email updated!');
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
+
+export async function removeUserFromTeam(id) {
+  const snapshot = await database.ref('/users/' + id + '/team/').once('value');
+  const teamId = snapshot.val();
+  database.ref('/teams/' + teamId + '/members/' + id).remove();
+  database.ref('/users/' + id).update({
+    team: '',
+  });
+
+  // remove all time off requests made by that user
+  const requestSnapshot = await database
+    .ref('/teams/' + teamId + '/requests/')
+    .orderByChild('sender')
+    .equalTo(id)
+    .once('value');
+  const requests = [];
+  requestSnapshot.forEach(function (childSnapshot) {
+    requests.push(childSnapshot.val());
+  });
+  requests.forEach(request => {
+    database.ref('/teams/' + teamId + '/requests/' + request.Id).remove();
+  });
+}
+
+export const addUserDetails = (fname, lname, id, phone, email) => {
   database
     .ref('/users/')
     .update({
       [id]: {
         firstname: fname,
         lastname: lname,
-        isAdmin: isAdmin,
         team: '',
         Id: id,
         phone: phone,
         email: email,
       },
+    })
+    .then(() => console.log('Data set.'));
+};
+
+export const addEmployeeDetails = (id, isAdmin, hours) => {
+  database
+    .ref('/users/' + id)
+    .update({
+      isAdmin: isAdmin,
+      hours: parseInt(hours),
     })
     .then(() => console.log('Data set.'));
 };
@@ -68,13 +132,25 @@ export function checkIfInTeam(user) {
 }
 
 export async function assignTeamToUser(id, teamid) {
+  let possibleColours = [...USERCOLOURS];
+  const users = await database
+    .ref('/users/')
+    .orderByChild('team')
+    .equalTo(teamid)
+    .once('value');
+
+  users.forEach(function (childSnapshot) {
+    const index = possibleColours.indexOf(childSnapshot.val().colour);
+    if (index > -1) {
+      // only splice array when item is found
+      possibleColours.splice(index, 1); // 2nd parameter means remove one item only
+    }
+  });
+
+  const userColour = possibleColours[0];
+
   const userRef = database.ref('/users/' + id);
 
-  const membersRef = database.ref('/teams/' + teamid + '/members/');
-
-  const snapshot = await membersRef.once('value');
-  const numMembers = snapshot.numChildren();
-  const userColour = USERCOLOURS[numMembers - 1];
   userRef
     .update({
       team: teamid,
@@ -147,7 +223,7 @@ export const addJoinCodeToList = (joinCode, teamid) => {
     .then(() => console.log('Join code added to DB.'));
 };
 
-export async function submitTimeOffRequest(Id, inputs) {
+export async function submitTimeOff(Id, inputs, status) {
   const user = auth().currentUser;
   const userid = user.uid;
   const userRef = database.ref('/users/' + userid);
@@ -174,11 +250,7 @@ export async function submitTimeOffRequest(Id, inputs) {
     database
       .ref('teams/' + teamid + '/requests/' + key)
       .update(
-        Object.assign(
-          {},
-          {Id: key, sender: user.uid, status: 'pending'},
-          inputs,
-        ),
+        Object.assign({}, {Id: key, sender: user.uid, status: status}, inputs),
       )
       .then(snapshot => {
         resolve(snapshot);

@@ -11,12 +11,23 @@ import {
 import {userIsAdmin} from '../apiService';
 import COLOURS from '../conts/colours';
 import {database} from '../apiService';
-import {FONTS, SIZES} from '../conts/theme';
+import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
 import format from 'date-fns/format';
 import {changeRequestStatus} from '../apiService';
 import parseISO from 'date-fns/parseISO';
 import isSameDay from 'date-fns/isSameDay';
 import {UserName} from './UserName';
+import {SmallCancelButton} from './SmallCancelButton';
+import {SmallButton} from './SmallButton';
+import {
+  BIGCLOCK,
+  CALENDAR,
+  CANCEL,
+  DOWNARROW,
+  NEXT,
+  REPEAT,
+  SMALLNEXT,
+} from '../conts/icons';
 
 const TimeOffRequest = ({navigation, inputs}) => {
   const [senderName, setSenderName] = useState();
@@ -50,14 +61,24 @@ const TimeOffRequest = ({navigation, inputs}) => {
       case true:
         switch (repeat) {
           case 'never':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee do MMM') +
-          //   ', ' +
-          //   '\n' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
+            return (
+              // format(parseISO(inputs.starts), 'eeee d MMM') +
+              // ' ' +
+              // '\n' +
+              // format(parseISO(inputs.starts), 'p') +
+              // ' - ' +
+              // format(parseISO(inputs.ends), 'p')
+              <View>
+                <Text style={FONTS.h3}>
+                  {format(parseISO(inputs.starts), 'do')},
+                </Text>
+
+                <Text style={{color: COLOURS.darkGrey}}>
+                  {format(parseISO(inputs.starts), 'p')} -
+                  {format(parseISO(inputs.ends), 'p')}
+                </Text>
+              </View>
+            );
           case 'monthly':
             return (
               <View>
@@ -71,6 +92,14 @@ const TimeOffRequest = ({navigation, inputs}) => {
                 </Text>
               </View>
             );
+          // return (
+          //   format(parseISO(inputs.starts), 'eeee d MMM') +
+          //   ', ' +
+          //   '\n' +
+          //   format(parseISO(inputs.starts), 'p') +
+          //   ' - ' +
+          //   format(parseISO(inputs.ends), 'p')
+          // );
           case 'fortnightly':
           // return (
           //   format(parseISO(inputs.starts), 'eeee') +
@@ -100,28 +129,54 @@ const TimeOffRequest = ({navigation, inputs}) => {
       case false:
         switch (repeat) {
           case 'never':
+            return (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  marginTop: 5,
+                }}>
+                <Text>Monthly, starting</Text>
+                <View>
+                  <Text>{format(parseISO(inputs.starts), 'eeee d MMM')}</Text>
+
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{color: COLOURS.blue}}>
+                      {format(parseISO(inputs.starts), 'p')}
+                    </Text>
+                    <SMALLNEXT />
+                    <Text style={{color: COLOURS.blue}}>
+                      {format(parseISO(inputs.ends), 'p')}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            );
           // return (
-          //   format(parseISO(inputs.starts), 'eeee do MMM') +
+          //   format(parseISO(inputs.starts), 'eeee d MMM') +
           //   ' at ' +
           //   format(parseISO(inputs.starts), 'p') +
           //   ' - ' +
-          //   format(parseISO(inputs.ends), 'eeee do MMM') +
+          //   format(parseISO(inputs.ends), 'eeee d MMM') +
           //   ' at ' +
           //   format(parseISO(inputs.ends), 'p')
+
           // );
+
           case 'monthly':
           // return (
-          //   format(parseISO(inputs.starts), 'do') +
+          //   'Every month \nFrom: ' +
+          //   format(parseISO(inputs.starts), 'd') +
           //   ' at ' +
           //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   '\n' +
-          //   format(parseISO(inputs.ends), 'do') +
+          //   '\nTo: ' +
+          //   format(parseISO(inputs.ends), 'd') +
           //   ' at ' +
           //   format(parseISO(inputs.ends), 'p')
           // );
           case 'fortnightly':
           // return (
+          //   'Every 2 weeks \nFrom: ' +
           //   format(parseISO(inputs.starts), 'eeee') +
           //   ' at ' +
           //   format(parseISO(inputs.starts), 'p') +
@@ -176,51 +231,193 @@ const TimeOffRequest = ({navigation, inputs}) => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
-            <UserName name={senderName} colour={senderColour} />
-            <Text style={FONTS.p3}>{inputs.reason}</Text>
-            <Text>{inputs.starts}</Text>
-            <Text>{inputs.ends}</Text>
-            {inputs.allDay ? <Text>All day</Text> : null}
-            <Text>{inputs.repeat}</Text>
+            <View style={[APPSTYLES.modal, {flexDirection: 'column'}]}>
+              <Pressable
+                onPress={() => setModalVisible(!modalVisible)}
+                style={{alignSelf: 'flex-end'}}>
+                <CANCEL />
+              </Pressable>
+              <View style={{alignSelf: 'flex-start'}}>
+                <UserName name={senderName} colour={senderColour} />
+              </View>
+              <Text style={FONTS.p3}>{inputs.reason}</Text>
+              {isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)) ? (
+                <View
+                  style={[
+                    styles.modalSingleDayDateContainer,
+                    styles.textBubble,
+                  ]}>
+                  <View style={styles.rowFlex}>
+                    <CALENDAR />
+                    <Text style={FONTS.body3}>
+                      {format(parseISO(inputs.starts), 'eeee d MMM')}
+                      {'  '}
+                    </Text>
+                  </View>
+                  <View style={styles.rowFlex}>
+                    <BIGCLOCK />
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                        {format(parseISO(inputs.starts), 'p')}
+                      </Text>
+                      <SMALLNEXT />
+                      {!inputs.isAllDay ? (
+                        <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                          {format(parseISO(inputs.ends), 'p')}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.multiDayDateContainer}>
+                  <DOWNARROW />
+                  <View>
+                    <View style={[styles.dateAndTime, styles.textBubble]}>
+                      <Text style={FONTS.body3}>
+                        {format(parseISO(inputs.starts), 'eee d MMM')}
+                        {'  '}
+                      </Text>
+                      {!inputs.isAllDay ? (
+                        <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                          {format(parseISO(inputs.starts), 'p')}
+                        </Text>
+                      ) : null}
+                    </View>
 
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => handleRejectRequest()}>
-              <Text style={styles.textStyle}>Reject Request</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => handleAcceptRequest()}>
-              <Text style={styles.textStyle}>Accept Request</Text>
-            </Pressable>
+                    <View style={[styles.dateAndTime, styles.textBubble]}>
+                      <Text style={FONTS.body3}>
+                        {format(parseISO(inputs.ends), 'eee d MMM')}
+                        {'  '}
+                      </Text>
+                      {!inputs.isAllDay ? (
+                        <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                          {format(parseISO(inputs.ends), 'p')}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {inputs.repeat !== 'never' ? (
+                <View style={styles.repeatInfoContainer}>
+                  <REPEAT />
+                  <Text style={FONTS.body3}>
+                    {inputs.repeat == 'daily'
+                      ? 'Daily'
+                      : inputs.repeat == 'weekly'
+                      ? 'Weekly'
+                      : inputs.repeat == 'fortnightly'
+                      ? 'Every two weeks'
+                      : inputs.repeat == 'monthly'
+                      ? 'Monthly'
+                      : null}
+                  </Text>
+                </View>
+              ) : null}
+              <View style={{flexDirection: 'row'}}>
+                <SmallCancelButton
+                  title="Reject"
+                  onPress={() => handleRejectRequest()}
+                />
+                <SmallButton
+                  title="Accept"
+                  onPress={() => handleAcceptRequest()}
+                />
+                {/* <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => handleRejectRequest()}>
+                <Text style={styles.textStyle}>Reject Request</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => handleAcceptRequest()}>
+                <Text style={styles.textStyle}>Accept Request</Text>
+              </Pressable> */}
+              </View>
+            </View>
           </View>
         </View>
       </Modal>
 
       <TouchableOpacity
-        style={styles.container}
+        style={APPSTYLES.itemContainer}
         onPress={() => setModalVisible(true)}>
-        {/* <View style={styles.infoContainer}> */}
-        <View style={{flexDirection: 'row'}}>
+        <View style={styles.userNameContainer}>
           <UserName name={senderAbbrevName} colour={senderColour} />
-          <Text style={FONTS.p3}>{inputs.reason}</Text>
+          <Text style={FONTS.body3}>{inputs.reason}</Text>
         </View>
         <View style={styles.dateContainer}>
           <View>
-            {dateSwitch(
-              isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)),
-              inputs.repeat,
+            {isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)) ? (
+              <View style={[styles.singleDayDateContainer, styles.textBubble]}>
+                <BIGCLOCK />
+                <Text style={FONTS.body3}>
+                  {format(parseISO(inputs.starts), 'eeee d MMM')}
+                  {'  '}
+                </Text>
+
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                    {format(parseISO(inputs.starts), 'p')}
+                  </Text>
+                  <SMALLNEXT />
+                  {!inputs.isAllDay ? (
+                    <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                      {format(parseISO(inputs.ends), 'p')}
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
+            ) : (
+              <View style={styles.multiDayDateContainer}>
+                <DOWNARROW />
+                <View>
+                  <View style={[styles.dateAndTime, styles.textBubble]}>
+                    <Text style={FONTS.body3}>
+                      {format(parseISO(inputs.starts), 'eee d MMM')}
+                      {'  '}
+                    </Text>
+                    {!inputs.isAllDay ? (
+                      <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                        {format(parseISO(inputs.starts), 'p')}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  <View style={[styles.dateAndTime, styles.textBubble]}>
+                    <Text style={FONTS.body3}>
+                      {format(parseISO(inputs.ends), 'eee d MMM')}
+                      {'  '}
+                    </Text>
+                    {!inputs.isAllDay ? (
+                      <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                        {format(parseISO(inputs.ends), 'p')}
+                      </Text>
+                    ) : null}
+                  </View>
+                </View>
+              </View>
             )}
+            {inputs.repeat !== 'never' ? (
+              <View style={styles.repeatInfoContainer}>
+                <REPEAT />
+
+                <Text style={FONTS.body3}>
+                  {inputs.repeat == 'daily'
+                    ? 'Daily'
+                    : inputs.repeat == 'weekly'
+                    ? 'Weekly'
+                    : inputs.repeat == 'fortnightly'
+                    ? 'Every two weeks'
+                    : inputs.repeat == 'monthly'
+                    ? 'Monthly'
+                    : null}
+                </Text>
+              </View>
+            ) : null}
           </View>
-          {inputs.allDay ? <Text>All day</Text> : null}
-          {inputs.repeat !== 'never' ? (
-            <Text>Repeat: {inputs.repeat}</Text>
-          ) : null}
         </View>
       </TouchableOpacity>
     </View>
@@ -228,7 +425,49 @@ const TimeOffRequest = ({navigation, inputs}) => {
 };
 
 const styles = StyleSheet.create({
-  userNameContainer: {},
+  rowFlex: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  singleDayDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 5,
+  },
+  modalSingleDayDateContainer: {
+    flexDirection: 'column',
+    // alignItems: 'center',
+    // justifyContent: 'flex-start',
+    paddingVertical: 5,
+  },
+  multiDayDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 5,
+  },
+  dateAndTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: 138,
+  },
+  repeatInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 5,
+  },
+  textBubble: {
+    // backgroundColor: COLOURS.paleGreen,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
 
   container: {
     backgroundColor: COLOURS.light,

@@ -10,6 +10,11 @@ import {database} from '../apiService';
 import TimeOffRequest from '../components/TimeOffRequest';
 import {FONTS, SIZES} from '../conts/theme';
 import {getUserInfo} from '../apiService';
+// import {eachDayOfInterval, getDay, isBefore, parseISO} from 'date-fns';
+import eachDayOfInterval from 'date-fns/eachDayOfInterval';
+import getDay from 'date-fns/getDay';
+import isBefore from 'date-fns/isBefore';
+import parseISO from 'date-fns/parseISO';
 const HomeAdmin = ({navigation}) => {
   const user = auth().currentUser;
   const [userInfo, setUserInfo] = React.useState({});
@@ -34,12 +39,44 @@ const HomeAdmin = ({navigation}) => {
         snapshot.forEach(function (childSnapshot) {
           shiftKeys.push(childSnapshot.val());
         });
+        let shiftArray = [];
+
         shiftKeys.forEach(key => {
           const shiftRef = database.ref('teams/' + teamid + '/rota/' + key);
-          setShifts([]);
           shiftRef.once('value', snapshot => {
-            setShifts(shifts => [...shifts, snapshot.val()]);
+            // need to create new array in order to sort shifts by date
+            shiftArray.push(snapshot.val());
+            // console.log(shiftArray);
+            shiftArray.sort((shift1, shift2) => {
+              return isBefore(parseISO(shift1.starts), parseISO(shift2.starts))
+                ? -1
+                : 1;
+            });
+            // console.log('sorted' + shiftArray);
+            setShifts([]);
+            shiftArray.forEach(shift => {
+              setShifts(shifts => [...shifts, shift]);
+            });
           });
+          // .then
+          // console.log(shiftArray),
+          // // setShifts([]);
+          // // shiftRef
+          // //   .once('value', snapshot => {
+          // //     setShifts(shifts => [...shifts, snapshot.val()]);
+          // //   })
+          // //   .then(
+          // shiftArray.sort((shift1, shift2) => {
+          //   return isBefore(
+          //     parseISO(shift1.starts),
+          //     parseISO(shift2.starts),
+          //   )
+          //     ? -1
+          //     : 1;
+          // }),
+          // console.log(shiftArray),
+          // setShifts(shiftArray),
+          // ();
         });
       });
     });

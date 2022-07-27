@@ -40,7 +40,7 @@ const DatePicker = ({label, timeRequired, dateToParent}) => {
         ) : null}
         <DateTimePicker
           value={date}
-          style={{width: 120}}
+          style={{width: 125}}
           onChange={onChangeDate}
         />
       </View>

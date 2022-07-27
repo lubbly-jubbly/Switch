@@ -7,68 +7,39 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
+  Modal,
 } from 'react-native';
 import {Item} from 'react-native-paper/lib/typescript/components/List/List';
-import {database} from '../apiService';
+import {database, editUserHours, removeUserFromTeam} from '../apiService';
 import {submitUser} from '../apiService';
-import {FONTS, SIZES, APPSTYLES} from '../conts/theme';
+import {FONTS, SIZES, APPSTYLES, MODALSTYLES} from '../conts/theme';
 import COLOURS from '../conts/colours';
 import {getUserInfo, getUserTeam} from '../userInfo';
 import auth from '@react-native-firebase/auth';
 import {UserName} from '../components/UserName';
-import {EMAIL, PHONE} from '../conts/icons';
+import {BIN, CANCEL, EDIT, EMAIL, PHONE} from '../conts/icons';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import {SmallButton} from '../components/SmallButton';
 
 const EditTeam = ({navigation}) => {
-  const [Id, setId] = useState();
-  const [Name, setName] = useState('');
-  const [Position, setPosition] = useState('');
   const [users, setUsers] = useState([]);
-  const [usersInfo, setUsersInfo] = useState([]);
   const [team, setTeam] = useState('');
   const [joinCode, setJoinCode] = useState('');
+  const [modalVisible, setModalVisible] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(null);
 
-  const saveUsers = () => {
-    submitUser(Id, Name, Position)
-      .then(result => {
-        setId(null);
-        setName('');
-        setPosition('');
-      })
-      .catch(error => {
-        console.log(error);
-      });
+  const [hours, setHours] = useState('');
+
+  const removeUser = id => {
+    removeUserFromTeam(id);
   };
 
-  const deleteAllUsers = () => {
-    database
-      .ref('users')
-      .remove()
-      .then(() => {
-        setUsers([]);
-      });
+  const editHours = id => {
+    editUserHours(id, hours);
+    setModalVisible(null);
   };
-
-  const deleteUser = Item => {
-    database
-      .ref('users/' + Item.Id)
-      .remove()
-      .then(() => {})
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
-  const editUser = Item => {
-    setId(Item.Id);
-    setName(Item.Name);
-    setPosition(Item.Position);
-  };
-  console.log(users);
 
   React.useEffect(() => {
-    // console.log(getUserTeam());
-    // const userInfo = await userRef.once('value');
-    // const teamid = userInfo.val().team;
     const user = auth().currentUser;
     const userid = user.uid;
     const userRef = database.ref('/users/' + userid);
@@ -95,13 +66,6 @@ const EditTeam = ({navigation}) => {
             });
           });
     });
-    //   // const membersRef = database.ref('/teams/' + teamid + '/members/')
-    //   });
-    // });
-
-    // database.ref('/teams/' + team + '/' + joinCode).once('value', snapshot => {
-    //   setJoinCode(snapshot.val());
-    // });
 
     const usersRef = database.ref('/users/');
     const OnLoadingListener = usersRef
@@ -118,120 +82,182 @@ const EditTeam = ({navigation}) => {
           }
         });
       });
-    const childRemovedListener = userRef.on('child_removed', snapshot => {
-      // Set Your Functioanlity Whatever you want.
-      alert('Child Removed');
-    });
-
-    const childChangedListener = userRef.on('child_changed', snapshot => {
-      // Set Your Functioanlity Whatever you want.
-      alert('Child Updated/Changed');
-    });
 
     return () => {
       userRef.off('value', OnLoadingListener);
-      userRef.off('child_removed', childRemovedListener);
-      userRef.off('child_changed', childChangedListener);
     };
   }, []);
 
   return (
     <ScrollView
       style={{backgroundColor: COLOURS.white, flex: 1, padding: SIZES.padding}}>
-      <Text style={FONTS.h2}>My Team</Text>
+      <View style={{paddingBottom: 60}}>
+        <Text style={FONTS.h2}>My Team</Text>
 
-      <Text>Team Join Code: {joinCode}</Text>
-      {/* <TextInput
-        placeholder="Name"
-        value={Name}
-        onChangeText={text => setName(text)}
-      />
-      <TextInput
-        placeholder="Position"
-        value={Position}
-        onChangeText={text => setPosition(text)}
-      /> */}
+        <Text>Team Join Code: {joinCode}</Text>
 
-      {/* <Button
-        title="save user"
-        style={styles.button}
-        onPress={() => saveUsers()}
-      /> */}
-      {/* <Button
-        title="delete all user"
-        style={styles.button}
-        onPress={() => deleteAllUsers()}
-      /> */}
-      {/* <Button
-        title="delete user"
-        style={styles.button}
-        onPress={() => deleteUser('id')}
-      />
-      <Button
-        title="edit user"
-        style={styles.button}
-        onPress={() => editUser()}
-      /> */}
-
-      {users.map((item, index) => (
-        <View style={styles.itemContainer}>
-          <View style={styles.infoContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+        {users.map((item, index) => (
+          <View>
+            <Modal
+              animationType="none"
+              transparent={true}
+              visible={modalVisible == index}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(null);
               }}>
-              <UserName
-                name={item.firstname + ' ' + item.lastname}
-                colour={item.colour}
-              />
+              <View style={MODALSTYLES.centeredView}>
+                <View style={MODALSTYLES.modalView}>
+                  <View style={[APPSTYLES.modal, {flexDirection: 'column'}]}>
+                    <Pressable
+                      onPress={() => {
+                        setModalVisible(null);
+                        setHours(null);
+                      }}
+                      style={{alignSelf: 'flex-end'}}>
+                      <CANCEL />
+                    </Pressable>
+                    <Text
+                      style={[
+                        FONTS.modalText,
+                        {textAlign: 'center', marginBottom: 15},
+                      ]}>
+                      Edit {item.firstname}'s weekly hours
+                    </Text>
+                    <Text>Current Hours: {item.hours}</Text>
+                    <View style={APPSTYLES.inputContainer}>
+                      <TextInput
+                        keyboardType="numeric"
+                        placeholder="New hours"
+                        placeholderTextColor={COLOURS.grey}
+                        style={{flex: 1}}
+                        // onChange={text => handleOnchange(text, 'employeesNeeded')}
+                        onChangeText={text => setHours(text)}
+                        value={hours}
+                      />
+                    </View>
+                  </View>
 
-              {item.isAdmin ? <Text>Admin</Text> : <Text>Employee</Text>}
+                  <SmallButton
+                    onPress={() => editHours(item.Id)}
+                    title="Change Hours"
+                  />
+                </View>
+              </View>
+            </Modal>
+
+            <Modal
+              animationType="none"
+              transparent={true}
+              visible={deleteModalVisible == index}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setDeleteModalVisible(null);
+              }}>
+              <View style={MODALSTYLES.centeredView}>
+                <View style={MODALSTYLES.modalView}>
+                  <View style={[APPSTYLES.modal, {flexDirection: 'column'}]}>
+                    <Pressable
+                      onPress={() => {
+                        setDeleteModalVisible(null);
+                      }}
+                      style={{alignSelf: 'flex-end'}}>
+                      <CANCEL />
+                    </Pressable>
+                    <Text
+                      style={[
+                        FONTS.modalText,
+                        {textAlign: 'center', marginBottom: 15},
+                      ]}>
+                      Are you sure you want to remove{' '}
+                      {item.firstname + ' ' + item.lastname} from your team?
+                      This action can't be undone.
+                    </Text>
+                  </View>
+                  <View style={{flexDirection: 'row'}}>
+                    <SmallButton
+                      onPress={() => console.log('hi')}
+                      title="Cancel"
+                    />
+                    <SmallButton
+                      onPress={() => removeUser(item.Id)}
+                      title="Remove"
+                    />
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            <View style={APPSTYLES.itemContainer}>
+              <View style={styles.infoContainer}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                  <UserName
+                    name={item.firstname + ' ' + item.lastname}
+                    colour={item.colour}
+                  />
+
+                  {item.isAdmin ? (
+                    <Text
+                      style={{
+                        color: COLOURS.purple,
+                        fontWeight: '600',
+                        fontSize: SIZES.body3,
+                      }}>
+                      Admin
+                    </Text>
+                  ) : null}
+                  {!item.isAdmin ? (
+                    <Pressable onPress={() => setDeleteModalVisible(index)}>
+                      <BIN />
+                    </Pressable>
+                  ) : null}
+                </View>
+                <View style={styles.infoListContainer}>
+                  <View style={styles.weeklyHoursContainer}>
+                    <Text style={[styles.weeklyHours, styles.infoItem]}>
+                      Weekly hours: {item.hours}
+                    </Text>
+                    <Pressable onPress={() => setModalVisible(index)}>
+                      <EDIT />
+                    </Pressable>
+                  </View>
+                  {item.phone !== undefined ? (
+                    <View
+                      style={[
+                        styles.individualContactContainer,
+                        styles.infoItem,
+                      ]}>
+                      <PHONE />
+                      <Text style={styles.individualContact}>{item.phone}</Text>
+                    </View>
+                  ) : null}
+                  {item.phone !== undefined ? (
+                    <View
+                      style={[
+                        styles.individualContactContainer,
+                        styles.infoItem,
+                      ]}>
+                      <EMAIL />
+                      <Text style={styles.individualContact}>{item.email}</Text>
+                    </View>
+                  ) : null}
+                </View>
+              </View>
+              <View style={styles.btnContainer}></View>
             </View>
-            <Text>Weekly hours: {item.hours}</Text>
-            {item.phone !== undefined ? (
-              <View style={styles.individualContactContainer}>
-                <PHONE />
-                <Text style={styles.individualContact}>{item.phone}</Text>
-              </View>
-            ) : null}
-            {item.phone !== undefined ? (
-              <View style={styles.individualContactContainer}>
-                <EMAIL />
-                <Text style={styles.individualContact}>{item.email}</Text>
-              </View>
-            ) : null}
           </View>
-          <View style={styles.btnContainer}>
-            <Button
-              title="Edit details"
-              style={styles.button}
-              onPress={() => editUser()}
-            />
-            {!item.isAdmin ? (
-              <Button
-                title="Remove employee from team"
-                style={styles.button}
-                onPress={() => deleteUser('id')}
-              />
-            ) : null}
-          </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    backgroundColor: COLOURS.light,
-    flexDirection: 'column',
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    marginVertical: 10,
-    paddingVertical: 10,
-  },
   infoContainer: {},
   btnContainer: {},
 
@@ -241,6 +267,16 @@ const styles = StyleSheet.create({
   },
   individualContact: {
     marginLeft: 7,
+  },
+  infoListContainer: {
+    marginTop: 5,
+  },
+  infoItem: {
+    marginVertical: 5,
+  },
+  weeklyHoursContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

@@ -23,6 +23,7 @@
     "react-native-calendars": "^1.1284.0",
     "react-native-confirmation-code-field": "^7.3.0",
     "react-native-dropdown-picker": "^5.4.2",
+    "react-native-horizontal-timeline": "^0.2.0",
     "react-native-modern-datepicker": "^1.0.0-beta.91",
     "react-native-number-please": "^1.0.5",
     "react-native-paper": "^4.12.1",

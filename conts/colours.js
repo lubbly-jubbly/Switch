@@ -7,9 +7,9 @@ const COLOURS = {
   // darkBlue: '#7978B5',
   red: 'red',
 
-  light: '#F7F7FF',
+  light: '#fff6f0',
   // blue: '#577399',
-  blue: '#3C6E71',
+  blue: '#ff5c4a',
   grey: '#b5b5b5',
   // grey: '#BDD5EA',
   // darkBlue: '#495867',
@@ -17,7 +17,7 @@ const COLOURS = {
 
   coral: '#FE5F55',
   purple: '#595091',
-  paleGreen: '#b8cccb',
+  paleGreen: '#fc9149',
   palestGreen: '#e6eded',
 };
 

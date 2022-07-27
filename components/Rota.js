@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import {parseISO} from 'date-fns';
 
 const Rota = ({navigation}) => {
   const preferenceAgainst = {
@@ -40,20 +41,20 @@ const Rota = ({navigation}) => {
         onMonthChange={month => {
           console.log('month changed', month);
         }}
-        onDayPress={day => {
-          const date = day;
-          navigation.navigate('Day', {day: day.dateString});
+        onDayPress={daydate => {
+          const day = new Date(daydate.dateString).toDateString();
+          navigation.navigate('Day', {day: day});
         }}
         firstDay={1}
         enableSwipeMonths={true}
         markingType={'multi-dot'}
-        markedDates={{
-          '2022-06-21': {
-            dots: [preferenceAgainst, preferenceFor],
-          },
-          '2022-06-22': closed,
-          '2022-06-23': onShift,
-        }}
+        // markedDates={{
+        //   '2022-06-21': {
+        //     dots: [preferenceAgainst, preferenceFor],
+        //   },
+        //   '2022-06-22': closed,
+        //   '2022-06-23': onShift,
+        // }}
       />
     </>
   );

@@ -17,7 +17,7 @@ import RepeatPicker from '../components/RepeatPicker';
 import DatePicker from '../components/DatePicker';
 import {submitTimeOff} from '../apiService';
 
-const RequestTimeOff = ({navigation}) => {
+const MarkTimeOff = ({navigation}) => {
   const [inputs, setInputs] = useState({
     reason: '',
     isAllDay: false,
@@ -28,7 +28,7 @@ const RequestTimeOff = ({navigation}) => {
   });
 
   async function handleSubmit() {
-    await submitTimeOff(null, inputs, 'pending');
+    await submitTimeOff(null, inputs, 'accepted');
     alert('request sent!');
     navigation.goBack();
   }
@@ -55,7 +55,7 @@ const RequestTimeOff = ({navigation}) => {
         <View style={{paddingTop: 50, paddingHorizontal: 20}}>
           <Text
             style={{color: COLOURS.black, fontSize: 25, fontWeight: 'bold'}}>
-            Request time off
+            Select time off
           </Text>
           <View style={{marginVertical: 20}}>
             <Input
@@ -78,12 +78,8 @@ const RequestTimeOff = ({navigation}) => {
               setValue={v => handleOnchange(v(), 'repeat')}
               value={inputs.repeat}
             />
-            <Input
-              placeholder="Notes for employer (optional)"
-              value={inputs.notes}
-              onChangeText={text => handleOnchange(text, 'notes')}
-            />
-            <BigButton title="Submit Request" onPress={() => handleSubmit()} />
+
+            <BigButton title="Submit Time Off" onPress={() => handleSubmit()} />
           </View>
         </View>
       </ScrollView>
@@ -97,4 +93,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RequestTimeOff;
+export default MarkTimeOff;

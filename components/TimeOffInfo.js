@@ -11,12 +11,18 @@ import {
 import {userIsAdmin} from '../apiService';
 import COLOURS from '../conts/colours';
 import {database} from '../apiService';
-import {FONTS} from '../conts/theme';
+import {APPSTYLES, FONTS} from '../conts/theme';
 import format from 'date-fns/format';
 import {changeRequestStatus} from '../apiService';
+import {UserName} from './UserName';
+import {isSameDay, parseISO} from 'date-fns';
+import {BIGCLOCK, DOWNARROW, SMALLNEXT} from '../conts/icons';
 
 const TimeOffInfo = ({navigation, inputs}) => {
   const [senderName, setSenderName] = useState();
+  const [senderAbbrevName, setSenderAbbrevName] = useState();
+  const [senderColour, setSenderColour] = useState();
+
   const [modalVisible, setModalVisible] = useState(false);
 
   React.useEffect(() => {
@@ -29,38 +35,108 @@ const TimeOffInfo = ({navigation, inputs}) => {
             ' ' +
             snapshot.child('lastname').val(),
         );
+        setSenderAbbrevName(
+          snapshot.child('firstname').val() +
+            ' ' +
+            snapshot.child('lastname').val()[0],
+        );
+        setSenderColour(snapshot.child('colour').val());
       });
-
     return () => {};
   }, []);
 
   return (
-    <View>
-      <TouchableOpacity
-        style={styles.container}
-        onPress={() => setModalVisible(true)}>
-        <View style={styles.infoContainer}>
-          <Text style={FONTS.userName}>{senderName}</Text>
-          <Text style={FONTS.p3}>{inputs.reason}</Text>
+    <View style={styles.container}>
+      <View style={styles.userNameContainer}>
+        <UserName name={senderAbbrevName} colour={senderColour} />
+        <Text style={FONTS.body3}>{inputs.reason}</Text>
+      </View>
+      {isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)) ? (
+        <View style={[styles.singleDayDateContainer, styles.textBubble]}>
+          {!inputs.isAllDay ? (
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                {format(parseISO(inputs.starts), 'p')}
+              </Text>
+              <SMALLNEXT />
+              <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                {format(parseISO(inputs.ends), 'p')}
+              </Text>
+            </View>
+          ) : null}
         </View>
-        <View style={styles.dateContainer}>
-          {/* <Text>From {format(new Date(inputs.starts), 'PPPPpppp')}</Text> */}
-          <Text>until {inputs.ends}</Text>
-          {inputs.allDay ? <Text>All day</Text> : null}
-          <Text>{inputs.repeat}</Text>
+      ) : (
+        <View style={styles.multiDayDateContainer}>
+          <DOWNARROW />
+          <View>
+            <View style={[styles.dateAndTime, styles.textBubble]}>
+              <Text style={FONTS.body3}>
+                {format(parseISO(inputs.starts), 'eee d MMM')}
+                {'  '}
+              </Text>
+              {!inputs.isAllDay ? (
+                <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                  {format(parseISO(inputs.starts), 'p')}
+                </Text>
+              ) : (
+                <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                  All day
+                </Text>
+              )}
+            </View>
+
+            <View style={[styles.dateAndTime, styles.textBubble]}>
+              <Text style={FONTS.body3}>
+                {format(parseISO(inputs.ends), 'eee d MMM')}
+                {'  '}
+              </Text>
+              {!inputs.isAllDay ? (
+                <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                  {format(parseISO(inputs.ends), 'p')}
+                </Text>
+              ) : null}
+            </View>
+          </View>
         </View>
-      </TouchableOpacity>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLOURS.light,
-    marginVertical: 10,
-    flexDirection: 'row',
     paddingVertical: 10,
   },
+  userNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  singleDayDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingVertical: 2,
+  },
+  multiDayDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+
+    paddingVertical: 2,
+  },
+  dateAndTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: 138,
+  },
+  // container: {
+  //   backgroundColor: COLOURS.light,
+  //   marginVertical: 10,
+  //   flexDirection: 'row',
+  //   paddingVertical: 10,
+  // },
   infoContainer: {
     // backgroundColor: COLOURS.grey,
     flex: 1,
@@ -69,48 +145,7 @@ const styles = StyleSheet.create({
     // backgroundColor: COLOURS.red,
     flex: 1,
   },
-  button: {
-    height: 55,
-    width: '100%',
-    backgroundColor: COLOURS.light,
-    marginVertical: 10,
 
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
   textStyle: {
     color: 'white',
     fontWeight: 'bold',

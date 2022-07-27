@@ -16,13 +16,6 @@ const database = firebase
     'https://calendarauth-b8522-default-rtdb.europe-west1.firebasedatabase.app/',
   );
 
-//DB stuff - extract USER DETAILS:
-// const users = [];
-
-// database.ref('/users/').once('value', snapshot => {
-//   console.log(snapshot.val());
-// });
-
 export async function createRota(startDate, endDate) {
   //array of each day we are assigning shifts for
   const dates = eachDayOfInterval({start: startDate, end: endDate});
@@ -33,6 +26,26 @@ export async function createRota(startDate, endDate) {
   const userRef = database.ref('/users/' + userid);
   const userInfo = await userRef.once('value');
   const teamid = userInfo.val().team;
+
+  // TEMPORARY: removing previous rota --------------------------------------------------------------------------
+  const tempUsersRef = database.ref('/users/');
+  const tempSnapshot = await tempUsersRef
+    .orderByChild('team')
+    .equalTo(teamid)
+    .once('value');
+  const tempUsers = [];
+
+  tempSnapshot.forEach(function (childSnapshot) {
+    tempUsers.push(childSnapshot.val());
+  });
+  await Promise.all(
+    database.ref('/teams/' + teamid + '/rota/').remove(),
+
+    tempUsers.map(async user => {
+      database.ref('/users/' + user.Id + '/' + 'shifts').remove();
+    }),
+  );
+  // end of temp section
 
   // finding a list of users in that team
   const usersRef = database.ref('/users/');
@@ -49,6 +62,7 @@ export async function createRota(startDate, endDate) {
   // creating a user id look-up object
   const userIds = {};
   users.forEach(user => {
+    console.log(user.Id + user.firstname);
     userIds[user['Id']] = user;
   });
 
@@ -111,9 +125,12 @@ export async function createRota(startDate, endDate) {
     .once('value');
 
   shifts.forEach(shift => {
+    shift.absentStaff = [];
     requests.forEach(function (childSnapshot) {
-      shift.absentStaff = [];
       if (checkSameDay(shift.starts, shift.ends, childSnapshot.val())) {
+        console.log(
+          shift.starts + 'absent girly is: ' + childSnapshot.val().sender,
+        );
         absentStaffId = childSnapshot.val().sender;
         shift.absentStaff.push(absentStaffId);
       }
@@ -181,12 +198,10 @@ export async function createRota(startDate, endDate) {
   });
 
   while (unassignedShifts > 0) {
-    // for (i = 0; i < 1; i++) {
     //find shift where the difference between the number of available employees and the number of employees needed is smallest
+    // 1. create an array with the extra staff available for each shift
     let extraStaffNumbers = [];
     let shiftsRemaining = [];
-    // create an array with the extra staff available for each shift
-
     shifts.forEach(shift => {
       if (shift.employeesNeededRemaining !== 0) {
         extraStaffNumbers.push(
@@ -195,15 +210,14 @@ export async function createRota(startDate, endDate) {
         shiftsRemaining.push(shift);
       }
     });
-    // find the min value of that array and the shift corresponding to that value
+    // 2. find the min value of that array and the shift corresponding to that value
     const chosenShift =
       shiftsRemaining[
         extraStaffNumbers.indexOf(Math.min(...extraStaffNumbers))
       ];
-
+    console.log(chosenShift);
     // out of that shift's available employee(s), find employee with most hours remaining
     let availableStaffDetails = [];
-
     let employeeHoursRemaining = [];
 
     chosenShift['availableStaff'].forEach(employeeId => {
@@ -214,11 +228,19 @@ export async function createRota(startDate, endDate) {
         }
       });
     });
+    console.log('available staff: ' + availableStaffDetails);
+    console.log('emp hrs: ' + employeeHoursRemaining);
+    console.log('this is indexed.... ' + Math.max(...employeeHoursRemaining));
+    console.log(
+      'this is REALLY indexed.... ' + employeeHoursRemaining.indexOf(22),
+    );
+
     const chosenEmployee =
       availableStaffDetails[
         employeeHoursRemaining.indexOf(Math.max(...employeeHoursRemaining))
       ];
-
+    console.log('firstIndex:  ' + availableStaffDetails[0].firstname);
+    console.log(chosenEmployee);
     //
 
     //  shifts.forEach(shift => {
@@ -258,10 +280,10 @@ export async function createRota(startDate, endDate) {
   //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
   //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-  console.log(shifts);
-  users.forEach(user => {
-    console.log(user.firstname + user.hoursRemaining);
-  });
+  // console.log(shifts);
+  // users.forEach(user => {
+  //   console.log(user.firstname + user.hoursRemaining);
+  // });
 
   await Promise.all(
     shifts.map(async shift => {

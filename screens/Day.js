@@ -6,7 +6,7 @@ import COLOURS from '../conts/colours';
 import TimeOffInfo from '../components/TimeOffInfo';
 import auth from '@react-native-firebase/auth';
 import {database} from '../apiService';
-import {FONTS, SIZES} from '../conts/theme';
+import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
 import areIntervalsOverlapping from 'date-fns/areIntervalsOverlapping';
 import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
@@ -15,6 +15,8 @@ import endOfDay from 'date-fns/endOfDay';
 import startOfDay from 'date-fns/startOfDay';
 import Shift from '../components/Shift';
 import {NEXT, PREVIOUS} from '../conts/icons';
+import ShiftItem from '../components/ShiftItem';
+
 export const checkSameDay = (startOfDay, endOfDay, item) => {
   //set up day interval
   // const startOfDay = new Date(day);
@@ -79,6 +81,7 @@ const Day = ({route, navigation}) => {
   const [userInfo, setUserInfo] = React.useState('');
   const [userLookUp, setUserLookUp] = useState({});
   const {day} = route.params;
+
   const [absences, setAbsences] = useState([]);
   const [shifts, setShifts] = useState([]);
 
@@ -161,14 +164,13 @@ const Day = ({route, navigation}) => {
         }
       });
     });
-
+    const count = 0;
     return () => {
       setUserInfo({}); // This worked for me
       userRef.off('value', OnLoadingListener);
       userRef.off('value', ShiftsListener);
     };
   }, []);
-
   return (
     <ScrollView
       style={{backgroundColor: COLOURS.white, padding: SIZES.padding}}>
@@ -189,26 +191,18 @@ const Day = ({route, navigation}) => {
           <NEXT />
         </Pressable>
       </View>
+      <View></View>
       <View>
-        <Text style={FONTS.h2}>Shifts</Text>
         {/* <EditDayShifts day={day} /> */}
-        <View style={styles.shiftContainer}>
-          {shifts.map((item, index) => (
+        <View style={APPSTYLES.itemContainer}>
+          <Text style={FONTS.h2}>Rota</Text>
+
+          {shifts.map((shift, index) => (
             <View>
-              {/* if (
-            areIntervalsOverlapping(
-              {
-                start: parseISO(childSnapshot.val().starts),
-                end: parseISO(childSnapshot.val().ends),
-              },
-              {start: startOfDay(new Date(day)), end: endOfDay(new Date(day))},
-            )
-          )
-               */}
               {areIntervalsOverlapping(
                 {
-                  start: parseISO(item.starts),
-                  end: parseISO(item.ends),
+                  start: parseISO(shift.starts),
+                  end: parseISO(shift.ends),
                 },
                 {
                   start: startOfDay(new Date(day)),
@@ -216,13 +210,15 @@ const Day = ({route, navigation}) => {
                 },
               ) ? (
                 <View>
-                  {item.assignedEmployees.map((emp, index) => (
+                  {shift.assignedEmployees.map((employee, index) => (
                     <View style={styles.shiftInfo}>
-                      <Text>{userLookUp[emp].firstname}</Text>
-                      <Text>
-                        {format(parseISO(item.starts), 'p')} -{' '}
-                        {format(parseISO(item.ends), 'p')}
-                      </Text>
+                      <View
+                        style={{
+                          borderBottomColor: COLOURS.grey,
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <ShiftItem employee={employee} shift={shift} />
                     </View>
                   ))}
                 </View>
@@ -232,20 +228,30 @@ const Day = ({route, navigation}) => {
         </View>
       </View>
 
-      <View>
-        <Text style={FONTS.h2}>Staff Absences</Text>
-      </View>
-      {absences.map((item, index) => (
+      <View style={APPSTYLES.itemContainer}>
         <View>
-          {checkSameDay(
-            startOfDay(new Date(day)),
-            endOfDay(new Date(day)),
-            item,
-          ) ? (
-            <TimeOffInfo inputs={item} />
-          ) : null}
+          <Text style={FONTS.h2}>Staff Absences</Text>
         </View>
-      ))}
+        {absences.map((item, index) => (
+          <View>
+            {checkSameDay(
+              startOfDay(new Date(day)),
+              endOfDay(new Date(day)),
+              item,
+            ) ? (
+              <View>
+                <View
+                  style={{
+                    borderBottomColor: COLOURS.grey,
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                  }}
+                />
+                <TimeOffInfo inputs={item} />
+              </View>
+            ) : null}
+          </View>
+        ))}
+      </View>
     </ScrollView>
   );
 };
@@ -264,10 +270,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   date: {},
-  shiftInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  shiftInfo: {},
   shiftContainer: {
     borderRadius: SIZES.radius,
     borderColor: COLOURS.paleGreen,

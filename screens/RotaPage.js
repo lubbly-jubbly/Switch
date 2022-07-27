@@ -4,12 +4,13 @@ import {StyleSheet, Button, StatusBar} from 'react-native';
 import Rota from '../components/Rota';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import BigButton from '../components/BigButton';
 
 const RotaPage = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <Rota navigation={navigation} />
-      <Button
+      <BigButton
         title="Request time off"
         onPress={() => navigation.navigate('Request time off')}
       />
@@ -24,6 +25,7 @@ const styles = StyleSheet.create({
     flex: 2,
     // alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
 });
 

@@ -17,7 +17,7 @@ import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import TimePicker from '../components/TimePicker';
 import format from 'date-fns/format';
-import {ADD, CANCEL} from '../conts/icons';
+import {ADD, CANCEL, CLOCK, INFO, SMALLNEXT, STAFF} from '../conts/icons';
 import {getTotalHours, submitRegularShift} from '../apiService';
 import formatISO from 'date-fns/formatISO';
 import parseISO from 'date-fns/parseISO';
@@ -26,6 +26,8 @@ import auth from '@react-native-firebase/auth';
 import getDay from 'date-fns/getDay';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import {SmallButton} from '../components/SmallButton';
+import {SmallCancelButton} from '../components/SmallCancelButton';
+import {enGB} from 'date-fns/locale';
 
 export const EditDayShifts = ({day}) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -124,7 +126,7 @@ export const EditDayShifts = ({day}) => {
   return (
     <View>
       <Modal
-        animationType="none"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -142,7 +144,10 @@ export const EditDayShifts = ({day}) => {
               <Text
                 style={[
                   FONTS.modalText,
-                  {textAlign: 'center', marginBottom: 15},
+                  {
+                    textAlign: 'center',
+                    marginBottom: 15,
+                  },
                 ]}>
                 New shift on {day}
               </Text>
@@ -156,7 +161,7 @@ export const EditDayShifts = ({day}) => {
                 onChange={(event, value) => handleOnchange(value, 'ends')}
                 value={inputs.ends}
               />
-              <View style={styles.inputContainer}>
+              <View style={APPSTYLES.inputContainer}>
                 <TextInput
                   keyboardType="numeric"
                   placeholder="Number of employees required"
@@ -178,7 +183,7 @@ export const EditDayShifts = ({day}) => {
       </Modal>
 
       <Modal
-        animationType="none"
+        animationType="fade"
         transparent={true}
         visible={deleteShiftModalVisible}
         onRequestClose={() => {
@@ -187,30 +192,29 @@ export const EditDayShifts = ({day}) => {
         }}>
         <View style={styles.centeredView}>
           <View style={[styles.modalView, APPSTYLES.modal]}>
-            <Pressable
-              onPress={() =>
-                setDeleteShiftModalVisible(!deleteShiftModalVisible)
-              }
-              style={{alignSelf: 'flex-end'}}>
-              <CANCEL />
-            </Pressable>
-            <Text style={FONTS.modalText}>Delete shift?</Text>
-            {/* <SmallButton
-              onPress={() =>
-                setDeleteShiftModalVisible(!deleteShiftModalVisible)
-              }
-              title="Cancel"
-            /> */}
-
-            {/* <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => handleDeleteShift(item)}>
-              <Text style={styles.textStyle}>Delete</Text>
-            </Pressable> */}
-            <SmallButton
-              title="Delete"
-              onPress={() => handleDeleteShift(item)}
-            />
+            <Text style={[FONTS.modalText]}>Delete shift?</Text>
+            {'starts' in item ? (
+              <Text
+                style={[
+                  FONTS.modalSubHeadingText,
+                  {textAlign: 'center', marginTop: 8},
+                ]}>
+                Delete shift on {day} at {format(parseISO(item.starts), 'p')} -{' '}
+                {format(parseISO(item.ends), 'p')}?
+              </Text>
+            ) : null}
+            <View style={{flexDirection: 'row'}}>
+              <SmallCancelButton
+                title="Cancel"
+                onPress={() =>
+                  setDeleteShiftModalVisible(!deleteShiftModalVisible)
+                }
+              />
+              <SmallButton
+                title="Delete"
+                onPress={() => handleDeleteShift(item)}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -232,15 +236,16 @@ export const EditDayShifts = ({day}) => {
         {shifts.map((item, index) => (
           <View style={styles.shiftContainer}>
             <View style={styles.timingsContainer}>
-              <Text>{format(parseISO(item.starts), 'p')}</Text>
-              {/* <Text>{item.starts}</Text> */}
-
-              <Text>-</Text>
-              <Text>{format(parseISO(item.ends), 'p')}</Text>
-              {/* <Text>{item.ends}</Text> */}
+              <CLOCK />
+              <View style={styles.startAndEndContainer}>
+                <Text>{format(parseISO(item.starts), 'p')}</Text>
+                <SMALLNEXT />
+                <Text>{format(parseISO(item.ends), 'p')}</Text>
+              </View>
             </View>
             <View style={styles.employeesContainer}>
-              <Text>Staff needed: {item.employeesNeeded}</Text>
+              <STAFF />
+              <Text>{item.employeesNeeded}</Text>
             </View>
             <Pressable
               onPress={() => {
@@ -287,7 +292,7 @@ const ChooseShifts = () => {
         .equalTo(teamid)
         .on('value', snapshot => {
           snapshot.forEach(function (childSnapshot) {
-            totalHrs += childSnapshot.val().hours;
+            totalHrs += parseInt(childSnapshot.val().hours);
           });
           setTotalEmployeeHours(totalHrs);
         });
@@ -339,8 +344,44 @@ const ChooseShifts = () => {
           <EditDayShifts day={day} />
         ))}
 
-        <Text>Total employee hours: {totalEmployeeHours}</Text>
-        <Text>Total shift hours: {totalShiftHours}</Text>
+        <View style={styles.hoursInfoContainer}>
+          {totalEmployeeHours < totalShiftHours ? (
+            <View style={styles.hoursWarningContainer}>
+              <INFO />
+              <Text style={[styles.hoursWarningText, {textAlign: 'center'}]}>
+                More shift hours than employee hours
+              </Text>
+            </View>
+          ) : totalEmployeeHours > totalShiftHours ? (
+            <View style={styles.hoursWarningContainer}>
+              <Text style={[styles.hoursWarningText, {textAlign: 'center'}]}>
+                <INFO />
+                More employee hours than shift hours
+              </Text>
+            </View>
+          ) : null}
+          <View style={styles.hoursContainer}>
+            <Text style={styles.hoursText}>
+              Total weekly employee hours: {totalEmployeeHours}
+            </Text>
+            <Text style={styles.hoursText}>
+              Total weekly shift hours: {totalShiftHours}
+            </Text>
+          </View>
+          {totalEmployeeHours < totalShiftHours ? (
+            <View style={styles.hoursAdviceContainer}>
+              <Text style={[styles.hoursAdviceText, {textAlign: 'center'}]}>
+                Consider reducing shifts or increasing employee hours.
+              </Text>
+            </View>
+          ) : totalEmployeeHours > totalShiftHours ? (
+            <View style={styles.hoursAdviceContainer}>
+              <Text style={[styles.hoursAdviceText, {textAlign: 'center'}]}>
+                Consider adding more shifts or reducing employee hours.
+              </Text>
+            </View>
+          ) : null}
+        </View>
       </View>
     </ScrollView>
   );
@@ -370,15 +411,52 @@ const styles = StyleSheet.create({
     height: 35,
     marginVertical: 5,
     backgroundColor: COLOURS.light,
-    // borderColor: COLOURS.paleGreen,
-    // borderWidth: 1,
     flexDirection: 'row',
     paddingHorizontal: 10,
     alignItems: 'center',
-
-    // borderWidth: 0.5,
     justifyContent: 'space-between',
     borderRadius: SIZES.radius,
+  },
+  hoursInfoContainer: {
+    marginVertical: 5,
+    marginHorizontal: 0,
+    backgroundColor: COLOURS.blue,
+    borderRadius: SIZES.radius,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  hoursContainer: {
+    flexDirection: 'column',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+
+  hoursText: {
+    color: COLOURS.white,
+    fontWeight: '500',
+    marginVertical: 4,
+  },
+  hoursAdviceText: {
+    color: COLOURS.white,
+    fontSize: 14,
+    fontWeight: '700',
+    marginVertical: 4,
+  },
+  hoursWarningText: {
+    color: COLOURS.white,
+    fontSize: 14,
+    fontWeight: '700',
+    marginVertical: 4,
+  },
+  hoursAdviceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginHorizontal: 50,
+  },
+  hoursWarningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   timingsContainer: {
     paddingHorizontal: 0,
@@ -388,22 +466,25 @@ const styles = StyleSheet.create({
     // borderWidth: 0.5,
     justifyContent: 'space-between',
   },
+
+  startAndEndContainer: {
+    paddingHorizontal: 0,
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    // borderWidth: 0.5,
+    justifyContent: 'space-evenly',
+  },
   employeesContainer: {
     paddingHorizontal: 15,
     alignItems: 'center',
-    flex: 1,
-    // borderWidth: 0.5,
-    justifyContent: 'space-between',
-  },
-  inputContainer: {
-    height: 45,
-    backgroundColor: COLOURS.light,
+    flex: 0.4,
     flexDirection: 'row',
-    paddingHorizontal: 15,
-    justifyContent: 'flex-start',
-    borderRadius: 10,
+    // borderWidth: 0.5,
+    justifyContent: 'center',
   },
 
+  //modal
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -413,19 +494,20 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: COLOURS.white,
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    borderColor: COLOURS.paleGreen,
-    borderWidth: 3,
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 0,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 4,
-    // elevation: 5,
+    // borderColor: COLOURS.paleGreen,
+    // borderWidth: 3,
+
+    shadowColor: COLOURS.paleGreen,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 50,
   },
   button: {
     marginVertical: 15,

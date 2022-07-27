@@ -12,7 +12,7 @@ import BigButton from '../components/BigButton';
 import Input from '../components/Input';
 import Loader from '../components/Loader';
 import auth from '@react-native-firebase/auth';
-import {FONTS} from '../conts/theme';
+import {APPSTYLES, FONTS} from '../conts/theme';
 
 const Login = ({navigation}) => {
   const [inputs, setInputs] = React.useState({email: '', password: ''});
@@ -115,6 +115,7 @@ const Login = ({navigation}) => {
             label="Email"
             value={inputs.email}
             placeholder="Enter your email address"
+            // placeholderStyle={{color: COLOURS.red}}
             error={errors.email}
           />
           <Input
@@ -132,7 +133,7 @@ const Login = ({navigation}) => {
 
           <View style={{alignItems: 'center'}}>
             <Text
-              style={[styles.link, {paddingBottom: 20}]}
+              style={[FONTS.smallBlue, {paddingBottom: 20}]}
               onPress={() => navigation.navigate('ForgotPassword')}>
               Forgot Password
             </Text>
@@ -141,7 +142,7 @@ const Login = ({navigation}) => {
               First time here?{' '}
               <Text
                 onPress={() => navigation.navigate('Signup')}
-                style={styles.link}>
+                style={FONTS.smallBlue}>
                 Create an account
               </Text>
             </Text>

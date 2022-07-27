@@ -18,16 +18,16 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 Icon.loadFont();
 const CELL_COUNT = 6;
 
-const EnterJoinCode = () => {
+const EnterJoinCode = ({childToParent, error}) => {
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
   });
-  const [visible, setVisible] = React.useState(false);
+  // const [visible, setVisible] = React.useState(false);
 
-  const changeDialog = () => setVisible(!visible);
+  // const changeDialog = () => setVisible(!visible);
 
   const user = auth().currentUser;
 
@@ -68,13 +68,17 @@ const EnterJoinCode = () => {
             />
           </Pressable>
         </View>
-        <View style={APPSTYLES.itemContainer}>
+        <View style={styles.fieldRow}>
+          {/* <View style={APPSTYLES.itemContainer}> */}
           <CodeField
             ref={ref}
             {...props}
             // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
             value={value}
-            onChangeText={setValue}
+            onChangeText={code => {
+              setValue(code);
+              childToParent(code);
+            }}
             cellCount={CELL_COUNT}
             rootStyle={styles.codeFieldRoot}
             keyboardType="number-pad"
@@ -82,15 +86,17 @@ const EnterJoinCode = () => {
             renderCell={({index, symbol, isFocused}) => (
               <Text
                 key={index}
-                style={[styles.cell, isFocused && styles.focusCell]}
+                style={[
+                  styles.cell,
+                  isFocused && styles.focusCell,
+                  {borderWidth: error ? 2 : 0},
+                ]}
                 onLayout={getCellOnLayoutHandler(index)}>
                 {symbol || (isFocused ? <Cursor /> : null)}
               </Text>
             )}
           />
         </View>
-
-        {/* <Button title="Enter" onPress={handleCodeSubmit} /> */}
       </View>
     </View>
   );
@@ -101,16 +107,34 @@ const styles = StyleSheet.create({
   title: {fontSize: 15, color: COLOURS.grey},
   // codeFieldRoot: {marginTop: 20},
   cell: {
-    width: 30,
-    height: 30,
-    lineHeight: 38,
-    fontSize: 24,
-    borderWidth: 2,
-    borderColor: '#00000030',
+    // width: 40,
+    // height: 40,
+    // lineHeight: 38,
+    // fontSize: 24,
+    // borderWidth: 2,
+    // borderColor: '#00000030',
+    // textAlign: 'center',
+    // backgroundColor: COLOURS.light,
+    // borderRadius: 15,
+
+    borderColor: COLOURS.red,
+    width: 45,
+    height: 45,
+    lineHeight: 55,
+    fontSize: 30,
+    fontWeight: '300',
     textAlign: 'center',
+    marginLeft: 8,
+    borderRadius: 6,
+    backgroundColor: COLOURS.light,
   },
   focusCell: {
     borderColor: '#000',
+  },
+  fieldRow: {
+    marginTop: 20,
+    flexDirection: 'row',
+    marginLeft: 0,
   },
 });
 

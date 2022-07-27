@@ -14,7 +14,7 @@ export const SIZES = {
   navTitle: 25,
   h1: 30,
   h2: 20,
-  h3: 16,
+  h3: 17,
   h4: 14,
   h5: 12,
   body1: 30,
@@ -47,6 +47,7 @@ export const FONTS = {
   h4: {fontSize: SIZES.h4, lineHeight: 22, fontWeight: '500'},
   h5: {fontSize: SIZES.h5, lineHeight: 22, fontWeight: '400'},
   modalText: {fontSize: SIZES.h3, lineHeight: 22, fontWeight: '600'},
+  modalSubHeadingText: {fontSize: SIZES.h4, lineHeight: 22, fontWeight: '400'},
 
   body1: {fontSize: SIZES.body1, lineHeight: 36},
   body2: {fontSize: SIZES.body2, lineHeight: 30},
@@ -54,6 +55,12 @@ export const FONTS = {
   body4: {fontSize: SIZES.body4, lineHeight: 22},
   body5: {fontSize: SIZES.body5, lineHeight: 22},
   userName: {fontSize: SIZES.h3, lineHeight: 22, fontWeight: '600'},
+  smallBlue: {
+    fontSize: SIZES.body3,
+    lineHeight: 22,
+    fontWeight: '600',
+    color: COLOURS.blue,
+  },
 };
 
 export const APPSTYLES = {
@@ -61,6 +68,16 @@ export const APPSTYLES = {
     backgroundColor: COLOURS.light,
     paddingHorizontal: 15,
     paddingVertical: 15,
+    borderRadius: 10,
+    marginVertical: 10,
+  },
+
+  inputContainer: {
+    height: 45,
+    backgroundColor: COLOURS.light,
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    justifyContent: 'flex-start',
     borderRadius: 10,
   },
 
@@ -71,11 +88,56 @@ export const APPSTYLES = {
   inputLabel: {
     marginVertical: 5,
     fontSize: 15,
-    color: COLOURS.grey,
+    color: COLOURS.black,
   },
 
   titleContainer: {
     marginBottom: 20,
+  },
+
+  buttonText: {
+    color: COLOURS.paleGreen,
+    fontWeight: '600',
+    fontSize: 17,
+  },
+};
+
+export const MODALSTYLES = {
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: COLOURS.white,
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    borderColor: COLOURS.paleGreen,
+    borderWidth: 3,
+  },
+  button: {
+    marginVertical: 15,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 };
 
