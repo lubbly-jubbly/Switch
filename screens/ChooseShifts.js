@@ -1,34 +1,27 @@
 import React, {useState} from 'react';
 import {
-  Text,
-  View,
-  Button,
-  StyleSheet,
   Modal,
   Pressable,
-  TextInput,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
-import Input from '../components/Input';
-import COLOURS from '../conts/colours';
-import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import TimePicker from '../components/TimePicker';
+import auth from '@react-native-firebase/auth';
 import format from 'date-fns/format';
-import {ADD, CANCEL, CLOCK, INFO, SMALLNEXT, STAFF} from '../conts/icons';
-import {getTotalHours, submitRegularShift} from '../apiService';
 import formatISO from 'date-fns/formatISO';
 import parseISO from 'date-fns/parseISO';
-import {database} from '../apiService';
-import auth from '@react-native-firebase/auth';
-import getDay from 'date-fns/getDay';
-import intervalToDuration from 'date-fns/intervalToDuration';
+import {database, submitRegularShift} from '../apiService';
 import {SmallButton} from '../components/SmallButton';
 import {SmallCancelButton} from '../components/SmallCancelButton';
-import {enGB} from 'date-fns/locale';
+import TimePicker from '../components/TimePicker';
+import COLOURS from '../conts/colours';
+import {ADD, CANCEL, CLOCK, INFO, SMALLNEXT, STAFF} from '../conts/icons';
+import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
 
+/* Component added to ChooseShifts screen for each day of the week. */
 export const EditDayShifts = ({day}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteShiftModalVisible, setDeleteShiftModalVisible] = useState(false);
@@ -42,26 +35,20 @@ export const EditDayShifts = ({day}) => {
     ends: new Date(),
     employeesNeeded: '',
   });
-  const dayOfWeekNumber = getDay(parseISO(day));
 
-  const daysOfTheWeek = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
 
+  /* Called when a user presses the add button to add a shift. 
+  Makes add shift modal visible. */
   const handleAddShift = () => {
     setModalVisible(true);
   };
 
+  /* Called when a user confirms the addition of a shift. 
+  Adds shift to regularShifts node in database. */
   function handleConfirmShift() {
     submitRegularShift(day, {
       starts: formatISO(inputs.starts),
@@ -70,6 +57,9 @@ export const EditDayShifts = ({day}) => {
     });
     setModalVisible(false);
   }
+
+  /* Called when a user confirms the deletion of a shift. 
+  Removes shift from regularShifts node in database. */
   const handleDeleteShift = item => {
     database
       .ref('teams/' + teamId + '/regularShifts/' + day + '/' + item.Id)
@@ -79,27 +69,16 @@ export const EditDayShifts = ({day}) => {
 
   React.useEffect(() => {
     const userRef = database.ref('users/' + user.uid);
+    // Fetches shifts
     userRef.once('value').then(snapshot => {
       setUserInfo(snapshot.val());
       const teamid = snapshot.val().team;
       setTeamId(teamid);
-
-      if (daysOfTheWeek.includes(day)) {
-        var shiftsRef = database.ref(
-          'teams/' + teamid + '/regularShifts/' + day + '/',
-        );
-      } else {
-        var shiftsRef = database.ref(
-          'teams/' +
-            teamid +
-            '/regularShifts/' +
-            daysOfTheWeek[dayOfWeekNumber] +
-            '/',
-        );
-      }
+      const shiftsRef = database.ref(
+        'teams/' + teamid + '/regularShifts/' + day + '/',
+      );
       shiftsRef.on('value', snapshot => {
         setShifts([]);
-
         snapshot.forEach(function (childSnapshot) {
           setShifts(shifts => [...shifts, childSnapshot.val()]);
         });
@@ -108,18 +87,17 @@ export const EditDayShifts = ({day}) => {
 
     const teamid = userInfo.team;
     const shiftsRef = database.ref('teams/' + teamid + '/shifts/' + day);
-
-    const OnLoadingListener = shiftsRef.on('value', snapshot => {
+    // Listens for changes to requests node and updates view.
+    const ShiftListener = shiftsRef.on('value', snapshot => {
       setShifts([]);
-
       snapshot.forEach(function (childSnapshot) {
         setShifts(shifts => [...shifts, childSnapshot.val()]);
       });
     });
 
     return () => {
-      setUserInfo({}); // This worked for me
-      userRef.off('value', OnLoadingListener);
+      setUserInfo({});
+      shiftsRef.off('value', ShiftListener);
     };
   }, []);
 
@@ -194,11 +172,7 @@ export const EditDayShifts = ({day}) => {
           <View style={[styles.modalView, APPSTYLES.modal]}>
             <Text style={[FONTS.modalText]}>Delete shift?</Text>
             {'starts' in item ? (
-              <Text
-                style={[
-                  FONTS.modalSubHeadingText,
-                  {textAlign: 'center', marginTop: 8},
-                ]}>
+              <Text style={[FONTS.modalSubHeadingText, styles.deleteModalText]}>
                 Delete shift on {day} at {format(parseISO(item.starts), 'p')} -{' '}
                 {format(parseISO(item.ends), 'p')}?
               </Text>
@@ -234,25 +208,35 @@ export const EditDayShifts = ({day}) => {
           </Pressable>
         </View>
         {shifts.map((item, index) => (
-          <View style={styles.shiftContainer}>
-            <View style={styles.timingsContainer}>
-              <CLOCK />
-              <View style={styles.startAndEndContainer}>
-                <Text>{format(parseISO(item.starts), 'p')}</Text>
-                <SMALLNEXT />
-                <Text>{format(parseISO(item.ends), 'p')}</Text>
+          <View>
+            {index !== 0 ? (
+              <View
+                style={{
+                  borderBottomColor: COLOURS.grey,
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                }}
+              />
+            ) : null}
+            <View style={styles.shiftContainer}>
+              <View style={styles.timingsContainer}>
+                <CLOCK />
+                <View style={[styles.startAndEndContainer]}>
+                  <Text>{format(parseISO(item.starts), 'p')}</Text>
+                  <SMALLNEXT />
+                  <Text>{format(parseISO(item.ends), 'p')}</Text>
+                </View>
               </View>
+              <View style={styles.employeesContainer}>
+                <STAFF />
+                <Text>{item.employeesNeeded}</Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  setDeleteShiftModalVisible(true), setItem(item);
+                }}>
+                <CANCEL />
+              </Pressable>
             </View>
-            <View style={styles.employeesContainer}>
-              <STAFF />
-              <Text>{item.employeesNeeded}</Text>
-            </View>
-            <Pressable
-              onPress={() => {
-                setDeleteShiftModalVisible(true), setItem(item);
-              }}>
-              <CANCEL />
-            </Pressable>
           </View>
         ))}
       </View>
@@ -274,8 +258,7 @@ const ChooseShifts = () => {
   const [totalShiftHours, setTotalShiftHours] = useState(0);
 
   const [userInfo, setUserInfo] = React.useState({});
-  const tabBarHeight = useBottomTabBarHeight();
-  console.log(tabBarHeight);
+
   React.useEffect(() => {
     const user = auth().currentUser;
     const userid = user.uid;
@@ -284,7 +267,6 @@ const ChooseShifts = () => {
     userRef.once('value').then(snapshot => {
       setUserInfo(snapshot.val());
       const teamid = snapshot.val().team;
-      // console.log(teamid);
       let totalHrs = 0;
       database
         .ref('/users/')
@@ -301,7 +283,6 @@ const ChooseShifts = () => {
     userRef.once('value').then(snapshot => {
       setUserInfo(snapshot.val());
       const teamid = snapshot.val().team;
-      // console.log(teamid);
       let totalShiftHrs = 0;
       daysOfTheWeek.forEach(day => {
         database
@@ -321,24 +302,16 @@ const ChooseShifts = () => {
           });
       });
     });
-
-    // const totalHours = await getTotalHours();
-
     return () => {};
   }, []);
 
   return (
-    <ScrollView
-      style={{
-        backgroundColor: COLOURS.white,
-        flex: 1,
-        padding: SIZES.padding,
-      }}>
-      <View style={{paddingBottom: 60}}>
+    <ScrollView style={styles.container}>
+      <View style={styles.bottomPadding}>
         <Text style={FONTS.h2}>Default Shifts</Text>
-        <Text style={[FONTS.h4, {marginBottom: 15, marginTop: 5}]}>
-          Here, choose the default shifts in your workplace. For a particular
-          day, the staff needed can be altered in the calendar.
+        <Text style={[FONTS.h4, styles.introText]}>
+          Here, choose the default shifts in your workplace. These will be used
+          to generate your rota.
         </Text>
         {daysOfTheWeek.map((day, index) => (
           <EditDayShifts day={day} />
@@ -348,13 +321,13 @@ const ChooseShifts = () => {
           {totalEmployeeHours < totalShiftHours ? (
             <View style={styles.hoursWarningContainer}>
               <INFO />
-              <Text style={[styles.hoursWarningText, {textAlign: 'center'}]}>
+              <Text style={[styles.hoursWarningText, styles.centeredText]}>
                 More shift hours than employee hours
               </Text>
             </View>
           ) : totalEmployeeHours > totalShiftHours ? (
             <View style={styles.hoursWarningContainer}>
-              <Text style={[styles.hoursWarningText, {textAlign: 'center'}]}>
+              <Text style={[styles.hoursWarningText, styles.centeredText]}>
                 <INFO />
                 More employee hours than shift hours
               </Text>
@@ -370,13 +343,13 @@ const ChooseShifts = () => {
           </View>
           {totalEmployeeHours < totalShiftHours ? (
             <View style={styles.hoursAdviceContainer}>
-              <Text style={[styles.hoursAdviceText, {textAlign: 'center'}]}>
+              <Text style={[styles.hoursAdviceText, styles.centeredText]}>
                 Consider reducing shifts or increasing employee hours.
               </Text>
             </View>
           ) : totalEmployeeHours > totalShiftHours ? (
             <View style={styles.hoursAdviceContainer}>
-              <Text style={[styles.hoursAdviceText, {textAlign: 'center'}]}>
+              <Text style={[styles.hoursAdviceText, styles.centeredText]}>
                 Consider adding more shifts or reducing employee hours.
               </Text>
             </View>
@@ -388,11 +361,17 @@ const ChooseShifts = () => {
 };
 
 const styles = StyleSheet.create({
+  centeredText: {textAlign: 'center'},
+  container: {
+    backgroundColor: COLOURS.white,
+    flex: 1,
+    padding: SIZES.padding,
+  },
+  introText: {marginBottom: 15, marginTop: 5},
+  bottomPadding: {paddingBottom: 60},
   dayNameContainer: {
-    // alignItems: 'center',
-    // width: 120,
     borderRadius: SIZES.radius + 2,
-    backgroundColor: COLOURS.paleGreen,
+    backgroundColor: COLOURS.blue,
     borderColor: COLOURS.paleGreen,
     borderWidth: 1,
     marginVertical: 5,
@@ -402,15 +381,13 @@ const styles = StyleSheet.create({
   dayContainer: {
     borderRadius: SIZES.radius,
     backgroundColor: COLOURS.white,
-    // borderColor: COLOURS.paleGreen,
-    // borderWidth: 1,
     marginVertical: 5,
     paddingVertical: 8,
   },
   shiftContainer: {
     height: 35,
     marginVertical: 5,
-    backgroundColor: COLOURS.light,
+    backgroundColor: COLOURS.white,
     flexDirection: 'row',
     paddingHorizontal: 10,
     alignItems: 'center',
@@ -463,7 +440,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    // borderWidth: 0.5,
     justifyContent: 'space-between',
   },
 
@@ -472,7 +448,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    // borderWidth: 0.5,
     justifyContent: 'space-evenly',
   },
   employeesContainer: {
@@ -480,11 +455,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 0.4,
     flexDirection: 'row',
-    // borderWidth: 0.5,
     justifyContent: 'center',
   },
 
-  //modal
+  //modal styles
+  deleteModalText: {textAlign: 'center', marginTop: 8},
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -497,8 +472,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    // borderColor: COLOURS.paleGreen,
-    // borderWidth: 3,
 
     shadowColor: COLOURS.paleGreen,
     shadowOffset: {

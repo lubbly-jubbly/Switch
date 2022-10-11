@@ -1,39 +1,38 @@
+import auth from '@react-native-firebase/auth';
 import React, {useState} from 'react';
 import {
-  Text,
   Alert,
-  Button,
-  View,
-  StyleSheet,
-  TextInput,
-  ScrollView,
   Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import {Item} from 'react-native-paper/lib/typescript/components/List/List';
-import {database, editUserHours, removeUserFromTeam} from '../apiService';
-import {submitUser} from '../apiService';
-import {FONTS, SIZES, APPSTYLES, MODALSTYLES} from '../conts/theme';
-import COLOURS from '../conts/colours';
-import {getUserInfo, getUserTeam} from '../userInfo';
-import auth from '@react-native-firebase/auth';
-import {UserName} from '../components/UserName';
-import {BIN, CANCEL, EDIT, EMAIL, PHONE} from '../conts/icons';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import {database, editUserHours, removeUserFromTeam} from '../apiService';
 import {SmallButton} from '../components/SmallButton';
+import {SmallCancelButton} from '../components/SmallCancelButton';
+import UserName from '../components/UserName';
+import COLOURS from '../conts/colours';
+import {BIN, CANCEL, EDIT, EMAIL, PHONE} from '../conts/icons';
+import {APPSTYLES, FONTS, MODALSTYLES, SIZES} from '../conts/theme';
 
+/* Edit team screen (admin only) */
 const EditTeam = ({navigation}) => {
   const [users, setUsers] = useState([]);
   const [team, setTeam] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [modalVisible, setModalVisible] = useState(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(null);
-
   const [hours, setHours] = useState('');
 
+  /* Called when admin confirms removal of user. Removes user from team */
   const removeUser = id => {
     removeUserFromTeam(id);
   };
 
+  /* Called when user confirms hours change for employee. */
   const editHours = id => {
     editUserHours(id, hours);
     setModalVisible(null);
@@ -44,19 +43,20 @@ const EditTeam = ({navigation}) => {
     const userid = user.uid;
     const userRef = database.ref('/users/' + userid);
 
+    // Fetches team join code
     userRef.once('value').then(snapshot => {
       setTeam(snapshot.child('team').val());
       const team = snapshot.child('team').val();
-      database.ref('/teams/' + team + '/joinCode').once('value', snapshot => {
+      database.ref('/teams/' + team + '/joinCode').on('value', snapshot => {
         setJoinCode(snapshot.val());
       }),
+        // Fetches info of all team members
         database
           .ref('/users/')
           .orderByChild('team')
           .equalTo(team)
           .on('value', snapshot => {
             setUsers([]);
-
             snapshot.forEach(function (childSnapshot) {
               if (childSnapshot.val().isAdmin) {
                 setUsers(users => [childSnapshot.val(), ...users]);
@@ -68,12 +68,11 @@ const EditTeam = ({navigation}) => {
     });
 
     const usersRef = database.ref('/users/');
+    // Listens for changes to team members' nodes and updates view.
     const OnLoadingListener = usersRef
       .orderByChild('team')
       .equalTo(team)
       .on('value', snapshot => {
-        setUsers([]);
-
         snapshot.forEach(function (childSnapshot) {
           if (childSnapshot.val().isAdmin) {
             setUsers(users => [childSnapshot.val(), ...users]);
@@ -84,7 +83,7 @@ const EditTeam = ({navigation}) => {
       });
 
     return () => {
-      userRef.off('value', OnLoadingListener);
+      usersRef.off('value', OnLoadingListener);
     };
   }, []);
 
@@ -92,9 +91,11 @@ const EditTeam = ({navigation}) => {
     <ScrollView
       style={{backgroundColor: COLOURS.white, flex: 1, padding: SIZES.padding}}>
       <View style={{paddingBottom: 60}}>
-        <Text style={FONTS.h2}>My Team</Text>
+        <View style={{paddingBottom: 15}}>
+          <Text style={FONTS.h2}>My Team</Text>
 
-        <Text>Team Join Code: {joinCode}</Text>
+          <Text>Team Join Code: {joinCode}</Text>
+        </View>
 
         {users.map((item, index) => (
           <View>
@@ -122,7 +123,9 @@ const EditTeam = ({navigation}) => {
                         FONTS.modalText,
                         {textAlign: 'center', marginBottom: 15},
                       ]}>
-                      Edit {item.firstname}'s weekly hours
+                      {item.isAdmin
+                        ? 'Edit your weekly hours'
+                        : 'Edit ' + item.firstname + "'s weekly hours"}
                     </Text>
                     <Text>Current Hours: {item.hours}</Text>
                     <View style={APPSTYLES.inputContainer}>
@@ -131,7 +134,6 @@ const EditTeam = ({navigation}) => {
                         placeholder="New hours"
                         placeholderTextColor={COLOURS.grey}
                         style={{flex: 1}}
-                        // onChange={text => handleOnchange(text, 'employeesNeeded')}
                         onChangeText={text => setHours(text)}
                         value={hours}
                       />
@@ -175,8 +177,8 @@ const EditTeam = ({navigation}) => {
                     </Text>
                   </View>
                   <View style={{flexDirection: 'row'}}>
-                    <SmallButton
-                      onPress={() => console.log('hi')}
+                    <SmallCancelButton
+                      onPress={() => setDeleteModalVisible(null)}
                       title="Cancel"
                     />
                     <SmallButton
@@ -188,67 +190,80 @@ const EditTeam = ({navigation}) => {
               </View>
             </Modal>
 
-            <View style={APPSTYLES.itemContainer}>
-              <View style={styles.infoContainer}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}>
-                  <UserName
-                    name={item.firstname + ' ' + item.lastname}
-                    colour={item.colour}
-                  />
+            <View>
+              <View
+                style={{
+                  borderBottomColor: COLOURS.grey,
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                }}
+              />
 
-                  {item.isAdmin ? (
-                    <Text
-                      style={{
-                        color: COLOURS.purple,
-                        fontWeight: '600',
-                        fontSize: SIZES.body3,
-                      }}>
-                      Admin
-                    </Text>
-                  ) : null}
-                  {!item.isAdmin ? (
-                    <Pressable onPress={() => setDeleteModalVisible(index)}>
-                      <BIN />
-                    </Pressable>
-                  ) : null}
-                </View>
-                <View style={styles.infoListContainer}>
-                  <View style={styles.weeklyHoursContainer}>
-                    <Text style={[styles.weeklyHours, styles.infoItem]}>
-                      Weekly hours: {item.hours}
-                    </Text>
-                    <Pressable onPress={() => setModalVisible(index)}>
-                      <EDIT />
-                    </Pressable>
+              <View style={APPSTYLES.itemContainerWhite}>
+                <View style={styles.infoContainer}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <UserName
+                      name={item.firstname + ' ' + item.lastname}
+                      colour={item.colour}
+                    />
+
+                    {item.isAdmin ? (
+                      <Text
+                        style={{
+                          color: COLOURS.blue,
+                          fontWeight: '600',
+                          fontSize: SIZES.body3,
+                        }}>
+                        Admin
+                      </Text>
+                    ) : null}
+                    {!item.isAdmin ? (
+                      <Pressable onPress={() => setDeleteModalVisible(index)}>
+                        <BIN />
+                      </Pressable>
+                    ) : null}
                   </View>
-                  {item.phone !== undefined ? (
-                    <View
-                      style={[
-                        styles.individualContactContainer,
-                        styles.infoItem,
-                      ]}>
-                      <PHONE />
-                      <Text style={styles.individualContact}>{item.phone}</Text>
+                  <View style={styles.infoListContainer}>
+                    <View style={styles.weeklyHoursContainer}>
+                      <Text style={[styles.weeklyHours, styles.infoItem]}>
+                        Weekly hours: {item.hours}
+                      </Text>
+                      <Pressable onPress={() => setModalVisible(index)}>
+                        <EDIT />
+                      </Pressable>
                     </View>
-                  ) : null}
-                  {item.phone !== undefined ? (
-                    <View
-                      style={[
-                        styles.individualContactContainer,
-                        styles.infoItem,
-                      ]}>
-                      <EMAIL />
-                      <Text style={styles.individualContact}>{item.email}</Text>
-                    </View>
-                  ) : null}
+                    {item.phone !== undefined ? (
+                      <View
+                        style={[
+                          styles.individualContactContainer,
+                          styles.infoItem,
+                        ]}>
+                        <PHONE />
+                        <Text style={styles.individualContact}>
+                          {item.phone}
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.phone !== undefined ? (
+                      <View
+                        style={[
+                          styles.individualContactContainer,
+                          styles.infoItem,
+                        ]}>
+                        <EMAIL />
+                        <Text style={styles.individualContact}>
+                          {item.email}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
                 </View>
+                <View style={styles.btnContainer}></View>
               </View>
-              <View style={styles.btnContainer}></View>
             </View>
           </View>
         ))}
@@ -277,6 +292,22 @@ const styles = StyleSheet.create({
   weeklyHoursContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: COLOURS.white,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+
+    shadowColor: COLOURS.paleGreen,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 50,
   },
 });
 

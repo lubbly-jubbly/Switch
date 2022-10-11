@@ -1,40 +1,23 @@
-import React, {useState} from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  Alert,
-  Modal,
-  Pressable,
-} from 'react-native';
-import {userIsAdmin} from '../apiService';
-import COLOURS from '../conts/colours';
-import {database} from '../apiService';
-import {APPSTYLES, FONTS} from '../conts/theme';
-import format from 'date-fns/format';
-import {changeRequestStatus} from '../apiService';
-import {UserName} from './UserName';
 import {isSameDay, parseISO} from 'date-fns';
-import {BIGCLOCK, DOWNARROW, SMALLNEXT} from '../conts/icons';
+import format from 'date-fns/format';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {database} from '../apiService';
+import {DOWNARROW, SMALLNEXT} from '../conts/icons';
+import {APPSTYLES, FONTS} from '../conts/theme';
+import UserName from './UserName';
 
+/* Absence component displayed as part of an individual day's absence details. */
 const TimeOffInfo = ({navigation, inputs}) => {
-  const [senderName, setSenderName] = useState();
   const [senderAbbrevName, setSenderAbbrevName] = useState();
   const [senderColour, setSenderColour] = useState();
 
-  const [modalVisible, setModalVisible] = useState(false);
-
+  // Finding employee colour and name for the UserName component
   React.useEffect(() => {
     database
       .ref('/users/' + inputs.sender)
       .once('value')
       .then(snapshot => {
-        setSenderName(
-          snapshot.child('firstname').val() +
-            ' ' +
-            snapshot.child('lastname').val(),
-        );
         setSenderAbbrevName(
           snapshot.child('firstname').val() +
             ' ' +
@@ -51,38 +34,37 @@ const TimeOffInfo = ({navigation, inputs}) => {
         <UserName name={senderAbbrevName} colour={senderColour} />
         <Text style={FONTS.body3}>{inputs.reason}</Text>
       </View>
+
       {isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)) ? (
         <View style={[styles.singleDayDateContainer, styles.textBubble]}>
           {!inputs.isAllDay ? (
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+              <Text style={[APPSTYLES.timeText, FONTS.body3]}>
                 {format(parseISO(inputs.starts), 'p')}
               </Text>
               <SMALLNEXT />
-              <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+              <Text style={[APPSTYLES.timeText, FONTS.body3]}>
                 {format(parseISO(inputs.ends), 'p')}
               </Text>
             </View>
-          ) : null}
+          ) : (
+            <Text style={[APPSTYLES.timeText, FONTS.body3]}>All day</Text>
+          )}
         </View>
       ) : (
-        <View style={styles.multiDayDateContainer}>
+        <View style={[styles.multiDayDateContainer, styles.textBubble]}>
           <DOWNARROW />
-          <View>
-            <View style={[styles.dateAndTime, styles.textBubble]}>
+          <View style={{}}>
+            <View style={[styles.dateAndTime]}>
               <Text style={FONTS.body3}>
                 {format(parseISO(inputs.starts), 'eee d MMM')}
                 {'  '}
               </Text>
               {!inputs.isAllDay ? (
-                <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                <Text style={[APPSTYLES.timeText, FONTS.body3]}>
                   {format(parseISO(inputs.starts), 'p')}
                 </Text>
-              ) : (
-                <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
-                  All day
-                </Text>
-              )}
+              ) : null}
             </View>
 
             <View style={[styles.dateAndTime, styles.textBubble]}>
@@ -91,7 +73,7 @@ const TimeOffInfo = ({navigation, inputs}) => {
                 {'  '}
               </Text>
               {!inputs.isAllDay ? (
-                <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+                <Text style={[APPSTYLES.timeText, FONTS.body3]}>
                   {format(parseISO(inputs.ends), 'p')}
                 </Text>
               ) : null}
@@ -129,20 +111,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: 138,
   },
-  // container: {
-  //   backgroundColor: COLOURS.light,
-  //   marginVertical: 10,
-  //   flexDirection: 'row',
-  //   paddingVertical: 10,
-  // },
   infoContainer: {
-    // backgroundColor: COLOURS.grey,
     flex: 1,
   },
   dateContainer: {
-    // backgroundColor: COLOURS.red,
     flex: 1,
   },
 

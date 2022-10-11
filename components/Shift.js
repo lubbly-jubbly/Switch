@@ -1,12 +1,12 @@
-import React from 'react';
-import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
-import COLOURS from '../conts/colours';
-import formatISO from 'date-fns/formatISO';
-import getDate from 'date-fns/getDate';
-import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
-import {FONTS, SIZES} from '../conts/theme';
+import parseISO from 'date-fns/parseISO';
+import React from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import COLOURS from '../conts/colours';
 import {NEXT, SMALLNEXT} from '../conts/icons';
+import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
+
+/* Shift component for upcoming shifts list displayed on Home tab */
 const Shift = ({navigation, shiftDetails}) => {
   return (
     <TouchableOpacity
@@ -14,7 +14,7 @@ const Shift = ({navigation, shiftDetails}) => {
       style={styles.button}
       onPress={() =>
         navigation.navigate('Day', {
-          day: parseISO(shiftDetails['starts']).toDateString(),
+          day: parseISO(shiftDetails.starts).toDateString(),
         })
       }>
       <View>
@@ -23,11 +23,11 @@ const Shift = ({navigation, shiftDetails}) => {
         </Text>
 
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+          <Text style={[APPSTYLES.timeText, FONTS.body3]}>
             {format(parseISO(shiftDetails.starts), 'p')}
           </Text>
           <SMALLNEXT />
-          <Text style={[{color: COLOURS.blue}, FONTS.body3]}>
+          <Text style={[APPSTYLES.timeText, FONTS.body3]}>
             {format(parseISO(shiftDetails.ends), 'p')}
           </Text>
         </View>
@@ -40,7 +40,6 @@ const Shift = ({navigation, shiftDetails}) => {
 const styles = StyleSheet.create({
   button: {
     borderRadius: SIZES.radius,
-
     width: '100%',
     backgroundColor: COLOURS.light,
     marginVertical: 10,

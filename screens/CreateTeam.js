@@ -1,32 +1,32 @@
-import React, {useState} from 'react';
+import auth from '@react-native-firebase/auth';
+import React from 'react';
 import {
-  Text,
-  View,
+  Alert,
   Keyboard,
-  StyleSheet,
-  Button,
+  KeyboardAvoidingView,
   Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import Input from '../components/Input';
-import BigButton from '../components/BigButton';
 import {
+  addEmployeeDetails,
   assignTeamToUser,
   createNewTeam,
   joinTeamWithJoinCode,
-  addEmployeeDetails,
 } from '../apiService';
-import auth from '@react-native-firebase/auth';
 import {handleSignOut} from '../authService';
-import {generateTeamCode} from '../teamCodes';
+import BigButton from '../components/BigButton';
+import Input from '../components/Input';
 import RadioButtons from '../components/RadioButtons';
-import EnterJoinCode from './EnterJoinCode';
-import {SmallButton} from '../components/SmallButton';
 import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
-import COLOURS from '../conts/colours';
+import EnterJoinCode from '../components/EnterJoinCode';
+import {database} from '../apiService';
 
+/* Create/Join team screen. Navigated to after signup. */
 const CreateTeam = ({navigation}) => {
-  // [teamName, setTeamName] = useState();
-
   const [errors, setErrors] = React.useState({});
   const [inputs, setInputs] = React.useState({
     teamName: '',
@@ -34,22 +34,20 @@ const CreateTeam = ({navigation}) => {
     joinCode: '',
   });
   const user = auth().currentUser;
-  const [loading, setLoading] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
-  // const [joinCode, setJoinCode] = useState('');
-  // const childToParent = isAdmin => {
-  //   setIsAdmin(isAdmin);
-  // };
 
+  /* Receives join code from parent */
   const childToParent = code => {
     handleOnchange(code, 'joinCode');
-    //change start time in date
   };
 
+  /* Called when a user joins or creates a team. Adds inputted details to database. */
   const handleConfirmUser = () => {
     addEmployeeDetails(user.uid, isAdmin, inputs.hours);
   };
 
+  /* Called by validateCreateTeam. 
+  A new team is added to the database with the user as admin. */
   async function handleCreateTeam() {
     await Promise.all([
       (teamid = createNewTeam(inputs.teamName, user.uid)),
@@ -59,13 +57,22 @@ const CreateTeam = ({navigation}) => {
     navigation.navigate('MainApp');
   }
 
-  async function handleJoinTeam() {
-    await Promise.all([
-      joinTeamWithJoinCode(user.uid, inputs.joinCode),
-      handleConfirmUser(),
-    ]);
-    navigation.navigate('MainApp');
-  }
+  /* Called by validateJoinTeam. If the join code entered belongs to a team, 
+  the user is added to the team. Otherwise, the user receives an alert. */
+  const handleJoinTeam = () => {
+    database.ref('/joinCodes/' + inputs.joinCode).once('value', snapshot => {
+      if (snapshot.exists()) {
+        joinTeamWithJoinCode(user.uid, inputs.joinCode),
+          handleConfirmUser(),
+          navigation.navigate('MainApp');
+      } else {
+        Alert.alert("The join code you've entered is invalid.");
+      }
+    });
+  };
+
+  /* Called if a user presses confirm with the "create team" radio button checked. 
+  Checks that all fields are filled. */
   const validateCreateTeam = async () => {
     Keyboard.dismiss();
     let isValid = true;
@@ -84,6 +91,9 @@ const CreateTeam = ({navigation}) => {
       handleCreateTeam();
     }
   };
+
+  /* Called if a user presses confirm with the "join team" radio button checked. 
+  Checks that all fields are filled. */
   const validateJoinTeam = async () => {
     Keyboard.dismiss();
     let isValid = true;
@@ -101,85 +111,105 @@ const CreateTeam = ({navigation}) => {
 
     if (isValid) {
       handleJoinTeam();
-      console.log('gone thru validate');
     }
   };
 
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
+  /* Called by validateCreateTeam and validateJoinTeam. 
+  Adds error to errors state variable in order to notify user of error. */
   const handleError = (error, input) => {
     setErrors(prevState => ({...prevState, [input]: error}));
   };
 
   return (
-    <View style={styles.screen}>
-      <View>
-        <View style={APPSTYLES.titleContainer}>
-          <Text style={FONTS.h2}>Welcome to ShiftWhizz!</Text>
-          <Text style={FONTS.h3}>We just need a couple more things...</Text>
-        </View>
-        <Input
-          keyboardType="numeric"
-          onChangeText={text => handleOnchange(text, 'hours')}
-          onFocus={() => handleError(null, 'hours')}
-          iconName="time-outline"
-          iconFocused="time"
-          label="How many hours per week do you wish to work?"
-          placeholder="Enter your weekly hours"
-          error={errors.hours}
-          value={inputs.hours}
-        />
-
-        <RadioButtons
-          onValueChange={value => {
-            setIsAdmin(value);
-          }}
-          value={isAdmin}
-        />
-
-        {isAdmin ? (
-          <View>
+    <KeyboardAvoidingView behavior="padding" enabled style={styles.container}>
+      <ScrollView>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <View style={APPSTYLES.titleContainer}>
+              <Text style={FONTS.h2}>Welcome to Switch!</Text>
+              <Text style={FONTS.h3}>We just need a couple more things...</Text>
+            </View>
             <Input
-              onChangeText={text => handleOnchange(text, 'teamName')}
-              onFocus={() => handleError(null, 'teamName')}
-              iconName="shop"
-              label="Enter the name of your team."
-              value={inputs.teamName}
-              placeholder="My Business"
-              error={errors.teamName}
-              entypo
+              keyboardType="numeric"
+              onChangeText={text => handleOnchange(text, 'hours')}
+              onFocus={() => handleError(null, 'hours')}
+              iconName="time-outline"
+              iconFocused="time"
+              label="How many hours per week do you wish to work?"
+              placeholder="Enter your weekly hours"
+              error={errors.hours}
+              value={inputs.hours}
             />
-          </View>
-        ) : (
-          <View>
-            <EnterJoinCode
-              childToParent={childToParent}
-              error={errors.joinCode}
-            />
-          </View>
-        )}
-      </View>
-      <View style={{marginBottom: 10}}>
-        <BigButton
-          title="Submit"
-          onPress={() => (isAdmin ? validateCreateTeam() : validateJoinTeam())}
-        />
 
-        <Pressable
-          onPress={() => handleSignOut()}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
-          <Text style={APPSTYLES.buttonText}>Sign out</Text>
-        </Pressable>
-      </View>
-    </View>
+            <RadioButtons
+              onValueChange={value => {
+                setIsAdmin(value);
+              }}
+              value={isAdmin}
+            />
+
+            {isAdmin ? (
+              <View>
+                <Input
+                  onChangeText={text => handleOnchange(text, 'teamName')}
+                  onFocus={() => handleError(null, 'teamName')}
+                  iconName="shop"
+                  label="Enter the name of your team."
+                  value={inputs.teamName}
+                  placeholder="My Business"
+                  error={errors.teamName}
+                  entypo
+                />
+              </View>
+            ) : (
+              <View>
+                <EnterJoinCode
+                  childToParent={childToParent}
+                  error={errors.joinCode}
+                />
+              </View>
+            )}
+
+            <View style={styles.bottomMargin}>
+              <BigButton
+                title="Submit"
+                onPress={() =>
+                  isAdmin ? validateCreateTeam() : validateJoinTeam()
+                }
+              />
+
+              <Pressable
+                onPress={() => {
+                  handleSignOut(), Keyboard.dismiss;
+                }}
+                style={styles.rowFlex}>
+                <Text style={APPSTYLES.buttonText}>Sign out</Text>
+              </Pressable>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    paddingTop: 30,
+  },
+  rowFlex: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  bottomMargin: {marginBottom: 10},
   link: {
     color: '#0000EE',
     fontSize: 16,
@@ -188,9 +218,27 @@ const styles = StyleSheet.create({
   screen: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    flex: 1,
     padding: SIZES.padding,
-    backgroundColor: COLOURS.white,
+  },
+
+  inner: {
+    padding: 24,
+    flex: 1,
+    justifyContent: 'space-around',
+  },
+  header: {
+    fontSize: 36,
+    marginBottom: 48,
+  },
+  textInput: {
+    height: 40,
+    borderColor: '#000000',
+    borderBottomWidth: 1,
+    marginBottom: 36,
+  },
+  btnContainer: {
+    backgroundColor: 'white',
+    marginTop: 12,
   },
 });
 

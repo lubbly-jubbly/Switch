@@ -1,31 +1,40 @@
 import React from 'react';
-import {SafeAreaView} from 'react-native';
-import {StyleSheet, Button, StatusBar} from 'react-native';
-import Rota from '../components/Rota';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {Platform, StatusBar, StyleSheet, View} from 'react-native';
 import BigButton from '../components/BigButton';
+import Rota from '../components/Rota';
 
+/* Rota tab first screen for employee. */
 const RotaPage = ({navigation}) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <Rota navigation={navigation} />
-      <BigButton
-        title="Request time off"
-        onPress={() => navigation.navigate('Request time off')}
-      />
-      <Button title="Create Rota" />
-    </SafeAreaView>
+    <View style={styles.pageContainer}>
+      <View style={styles.container}>
+        <Rota navigation={navigation} />
+        <View style={styles.buttonContainer}>
+          <BigButton
+            title="Request time off"
+            onPress={() => navigation.navigate('Request time off')}
+          />
+        </View>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    flex: 2,
-    // alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'white',
+    paddingHorizontal: 20,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+
+  container: {},
+  buttonContainer: {
+    marginTop: 30,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
   },
 });
 

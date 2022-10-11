@@ -1,24 +1,17 @@
+import auth from '@react-native-firebase/auth';
 import React from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Keyboard,
-  Alert,
-  StyleSheet,
-} from 'react-native';
-import COLOURS from '../conts/colours';
+import {Keyboard, SafeAreaView, Text, View} from 'react-native';
 import BigButton from '../components/BigButton';
 import Input from '../components/Input';
-import Loader from '../components/Loader';
-import auth from '@react-native-firebase/auth';
-import {APPSTYLES, FONTS} from '../conts/theme';
+import COLOURS from '../conts/colours';
+import {FONTS} from '../conts/theme';
 
+/* Login screen. */
 const Login = ({navigation}) => {
   const [inputs, setInputs] = React.useState({email: '', password: ''});
   const [errors, setErrors] = React.useState({});
-  const [loading, setLoading] = React.useState(false);
 
+  /* Called if validate is successful. Authenticates user. */
   const handleLogin = () => {
     auth()
       .signInWithEmailAndPassword(inputs.email, inputs.password)
@@ -51,6 +44,8 @@ const Login = ({navigation}) => {
       });
   };
 
+  /* Called when the user presses submit button. Checks that all fields are
+   filled out. */
   const validate = async () => {
     Keyboard.dismiss();
     let isValid = true;
@@ -67,46 +62,31 @@ const Login = ({navigation}) => {
     }
   };
 
-  // const login = () => {
-  //   setLoading(true);
-  //   setTimeout(async () => {
-  //     setLoading(false);
-  //     let userData = await AsyncStorage.getItem('userData');
-  //     if (userData) {
-  //       userData = JSON.parse(userData);
-  //       if (
-  //         inputs.email == userData.email &&
-  //         inputs.password == userData.password
-  //       ) {
-  //         navigation.navigate('HomeScreen');
-  //         AsyncStorage.setItem(
-  //           'userData',
-  //           JSON.stringify({...userData, loggedIn: true}),
-  //         );
-  //       } else {
-  //         Alert.alert('Error', 'Invalid Details');
-  //       }
-  //     } else {
-  //       Alert.alert('Error', 'User does not exist');
-  //     }
-  //   }, 3000);
-  // };
-
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
 
+  /* Called by validate. Adds error to errors state variable in order to notify user of error. */
   const handleError = (error, input) => {
     setErrors(prevState => ({...prevState, [input]: error}));
   };
+
   return (
     <SafeAreaView style={{backgroundColor: COLOURS.white, flex: 1}}>
-      <Loader visible={loading} />
-      <View style={{paddingTop: 50, paddingHorizontal: 20}}>
-        <Text style={FONTS.h1}>Welcome back!</Text>
-        <Text style={FONTS.h2}>Enter Your Details to log in.</Text>
-
-        <View style={{marginVertical: 20}}>
+      <View
+        style={{
+          paddingVertical: 70,
+          paddingHorizontal: 20,
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          flex: 1,
+        }}>
+        <View style={{}}>
+          <Text style={FONTS.h1}>Welcome back!</Text>
+          <Text style={FONTS.h2}>Enter Your Details to log in.</Text>
+        </View>
+        <View style={{marginTop: 20}}>
           <Input
             onChangeText={text => handleOnchange(text, 'email')}
             onFocus={() => handleError(null, 'email')}
@@ -129,36 +109,29 @@ const Login = ({navigation}) => {
             value={inputs.password}
             password
           />
+        </View>
+
+        <View style={{alignItems: 'center'}}>
           <BigButton title="Log In" onPress={validate} />
 
-          <View style={{alignItems: 'center'}}>
+          <Text
+            style={[FONTS.smallBlue, {paddingBottom: 20}]}
+            onPress={() => navigation.navigate('ForgotPassword')}>
+            Forgot Password
+          </Text>
+          <Text style={{fontSize: 16}}>
+            {' '}
+            First time here?{' '}
             <Text
-              style={[FONTS.smallBlue, {paddingBottom: 20}]}
-              onPress={() => navigation.navigate('ForgotPassword')}>
-              Forgot Password
+              onPress={() => navigation.navigate('Signup')}
+              style={FONTS.smallBlue}>
+              Create an account
             </Text>
-            <Text style={{fontSize: 16}}>
-              {' '}
-              First time here?{' '}
-              <Text
-                onPress={() => navigation.navigate('Signup')}
-                style={FONTS.smallBlue}>
-                Create an account
-              </Text>
-            </Text>
-          </View>
+          </Text>
         </View>
       </View>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  link: {
-    color: '#0000EE',
-    fontSize: 16,
-    textDecorationLine: 'underline',
-  },
-});
 
 export default Login;

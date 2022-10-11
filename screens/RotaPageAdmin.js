@@ -1,18 +1,25 @@
-import React, {useState} from 'react';
-import {Modal, Pressable, SafeAreaView} from 'react-native';
-import {StyleSheet, Button, StatusBar, View, Text} from 'react-native';
-import Rota from '../components/Rota';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import BigButton from '../components/BigButton';
-import COLOURS from '../conts/colours';
-import {APPSTYLES, FONTS} from '../conts/theme';
-import {CANCEL} from '../conts/icons';
-import DatePicker from '../components/DatePicker';
-import {SmallButton} from '../components/SmallButton';
-import {createRota} from '../createRota';
 import {parseISO} from 'date-fns';
+import React, {useState} from 'react';
+import {
+  Modal,
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+} from 'react-native';
+import BigButton from '../components/BigButton';
+import DatePicker from '../components/DatePicker';
+import Rota from '../components/Rota';
+import {SmallButton} from '../components/SmallButton';
+import COLOURS from '../conts/colours';
+import {CANCEL} from '../conts/icons';
+import {APPSTYLES, FONTS} from '../conts/theme';
+import {createRota} from '../createRota';
 
+/* Rota tab first screen for admin.  */
 const RotaPageAdmin = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputs, setInputs] = useState({
@@ -20,29 +27,34 @@ const RotaPageAdmin = ({navigation}) => {
     ends: '',
   });
 
+  /* Called when user presses create rota button in modal. Generates rota. */
   async function handleSubmit() {
     createRota(parseISO(inputs.starts), parseISO(inputs.ends));
     setModalVisible(!modalVisible);
   }
 
+  /* Receives date picker input */
   const startDateToParent = date => {
     handleOnchange(date, 'starts');
   };
+
+  /* Receives date picker input */
   const endDateToParent = date => {
     handleOnchange(date, 'ends');
   };
 
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.pageContainer}>
       <Modal
         animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
@@ -89,28 +101,38 @@ const RotaPageAdmin = ({navigation}) => {
           </View>
         </View>
       </Modal>
-      <Rota navigation={navigation} />
-      <BigButton
-        title="Mark time off"
-        onPress={() => navigation.navigate('Select time off')}
-      />
-      <BigButton
-        title="Create Rota"
-        onPress={() => setModalVisible(!modalVisible)}
-      />
+      <View style={styles.container}>
+        <Rota navigation={navigation} />
+        <View style={styles.buttonContainer}>
+          <BigButton
+            title="Mark time off"
+            onPress={() => navigation.navigate('Select time off')}
+          />
+          <BigButton
+            title="Create Rota"
+            onPress={() => setModalVisible(!modalVisible)}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    flex: 2,
-    // alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'white',
+    paddingHorizontal: 20,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
 
+  container: {},
+  buttonContainer: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
   //modal
   centeredView: {
     flex: 1,
@@ -124,9 +146,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    // borderColor: COLOURS.paleGreen,
-    // borderWidth: 3,
-
     shadowColor: COLOURS.paleGreen,
     shadowOffset: {
       width: 0,

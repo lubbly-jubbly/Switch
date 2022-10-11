@@ -1,20 +1,9 @@
 import React from 'react';
 import {Calendar} from 'react-native-calendars';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  Button,
-  Alert,
-} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {parseISO} from 'date-fns';
 
+/* Calendar component for Rota tab */
 const Rota = ({navigation}) => {
+  // design for date markers: not yet implemented due to time constraints
   const preferenceAgainst = {
     key: 'preference-against',
     color: 'red',
@@ -38,9 +27,6 @@ const Rota = ({navigation}) => {
     <>
       <Calendar
         minDate={new Date()}
-        onMonthChange={month => {
-          console.log('month changed', month);
-        }}
         onDayPress={daydate => {
           const day = new Date(daydate.dateString).toDateString();
           navigation.navigate('Day', {day: day});
@@ -48,24 +34,9 @@ const Rota = ({navigation}) => {
         firstDay={1}
         enableSwipeMonths={true}
         markingType={'multi-dot'}
-        // markedDates={{
-        //   '2022-06-21': {
-        //     dots: [preferenceAgainst, preferenceFor],
-        //   },
-        //   '2022-06-22': closed,
-        //   '2022-06-23': onShift,
-        // }}
       />
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default Rota;

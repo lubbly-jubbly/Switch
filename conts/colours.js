@@ -1,26 +1,20 @@
 const COLOURS = {
   white: '#fff',
   black: '#000',
-  // blue: '#5D5FEE',
-  // grey: '#BABBC3',
-  // light: '#F3F4FB',
-  // darkBlue: '#7978B5',
   red: 'red',
-
   light: '#fff6f0',
-  // blue: '#577399',
   blue: '#ff5c4a',
   grey: '#b5b5b5',
-  // grey: '#BDD5EA',
-  // darkBlue: '#495867',
+  darkGrey: '#8e8f91',
   darkBlue: '#353535',
-
+  lightBlue: '#05c1f5',
   coral: '#FE5F55',
-  purple: '#595091',
+  purple: '#6b0cc9',
   paleGreen: '#fc9149',
   palestGreen: '#e6eded',
 };
 
+// colours used for assigning each team member a different colour
 export const USERCOLOURS = [
   '#dc143c',
   '#8b008b',

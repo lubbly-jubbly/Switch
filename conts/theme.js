@@ -1,10 +1,10 @@
-import {Dimensions, StyleSheet} from 'react-native';
+import {Dimensions} from 'react-native';
 import COLOURS from './colours';
-
+import {StyleSheet} from 'react-native';
 const {width, height} = Dimensions.get('window');
 
 export const SIZES = {
-  //globalls
+  //globals
   base: 8,
   font: 14,
   radius: 12,
@@ -35,13 +35,13 @@ export const FONTS = {
     fontSize: SIZES.h1,
     lineHeight: 36,
     fontWeight: '800',
-    color: COLOURS.darkBlue,
+    color: COLOURS.blue,
   },
   h2: {
     fontSize: SIZES.h2,
     lineHeight: 30,
     fontWeight: '700',
-    color: COLOURS.blue,
+    color: COLOURS.black,
   },
   h3: {fontSize: SIZES.h3, lineHeight: 22, fontWeight: '600'},
   h4: {fontSize: SIZES.h4, lineHeight: 22, fontWeight: '500'},
@@ -72,6 +72,28 @@ export const APPSTYLES = {
     marginVertical: 10,
   },
 
+  itemContainerWhite: {
+    backgroundColor: COLOURS.white,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+  },
+  itemContainerWhiteShadow: {
+    backgroundColor: COLOURS.white,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+
   inputContainer: {
     height: 45,
     backgroundColor: COLOURS.light,
@@ -100,6 +122,15 @@ export const APPSTYLES = {
     fontWeight: '600',
     fontSize: 17,
   },
+
+  timeText: {
+    color: COLOURS.darkGrey,
+    fontWeight: '600',
+  },
+  line: {
+    borderBottomColor: COLOURS.grey,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
 };
 
 export const MODALSTYLES = {
@@ -109,14 +140,21 @@ export const MODALSTYLES = {
     alignItems: 'center',
     marginTop: 22,
   },
+
   modalView: {
     margin: 20,
     backgroundColor: COLOURS.white,
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-    borderColor: COLOURS.paleGreen,
-    borderWidth: 3,
+    shadowColor: COLOURS.paleGreen,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 50,
   },
   button: {
     marginVertical: 15,

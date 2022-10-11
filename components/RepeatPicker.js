@@ -1,13 +1,11 @@
 import React, {useState} from 'react';
-
 import {View, StyleSheet} from 'react-native';
-
 import COLOURS from '../conts/colours';
 import DropDownPicker from 'react-native-dropdown-picker';
 
+/* Repeat picker dropdown for requesting/selecting time off forms */
 const RepeatPicker = ({...props}) => {
   const [open, setOpen] = useState(false);
-  // const [value, setValue] = useState(null);
   const [items, setItems] = useState([
     {label: 'Never repeat', value: 'never'},
     {label: 'Repeat every day', value: 'daily'},
@@ -15,20 +13,6 @@ const RepeatPicker = ({...props}) => {
     {label: 'Repeat every 2 weeks', value: 'fortnightly'},
     {label: 'Repeat every month', value: 'monthly'},
   ]);
-
-  // console.log(value);
-  // const onChangeRepeat = hi => {
-  //   setValue(hi),
-  //     () => {
-  //       console.log(value);
-  //     };
-  //   // console.log(value);
-  //   // repeatToParent(getRepeat());
-  // };
-
-  // function getRepeat() {
-  //   return value;
-  // }
 
   return (
     <DropDownPicker
@@ -38,13 +22,8 @@ const RepeatPicker = ({...props}) => {
         borderRadius: 10,
       }}
       containerStyle={{}}
-      dropDownContainerStyle={{
-        backgroundColor: COLOURS.light,
-        borderColor: COLOURS.grey,
-      }}
-      arrowIconStyle={{
-        color: COLOURS.grey,
-      }}
+      dropDownContainerStyle={styles.dropdown}
+      arrowIconStyle={styles.arrow}
       textStyle={styles.label}
       placeholder="Repeat"
       placeholderStyle={styles.label}
@@ -63,5 +42,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLOURS.blue,
   },
+  dropdown: {
+    backgroundColor: COLOURS.light,
+    borderColor: COLOURS.grey,
+  },
+  arrow: {
+    color: COLOURS.grey,
+  },
 });
+
 export default RepeatPicker;

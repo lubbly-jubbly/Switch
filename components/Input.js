@@ -6,6 +6,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {APPSTYLES} from '../conts/theme';
 Icon.loadFont();
 Entypo.loadFont();
+
+/* Input component used in forms */
 const Input = ({
   label,
   iconName,
@@ -24,7 +26,7 @@ const Input = ({
       <Text style={APPSTYLES.inputLabel}>{label}</Text>
       <View
         style={[
-          style.inputContainer,
+          styles.inputContainer,
           APPSTYLES.itemContainer,
           {
             borderColor: error
@@ -86,22 +88,18 @@ const Input = ({
           />
         )}
       </View>
-      {error && (
-        <Text style={{marginTop: 7, color: COLOURS.red, fontSize: 12}}>
-          {error}
-        </Text>
-      )}
+      {error && <Text style={styles.errorText}>{error}</Text>} 
     </View>
   );
 };
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   inputContainer: {
-    // height: 55,
     flexDirection: 'row',
     borderWidth: 0.5,
     justifyContent: 'flex-start',
   },
+  errorText: {marginTop: 7, color: COLOURS.red, fontSize: 12},
 });
 
 export default Input;

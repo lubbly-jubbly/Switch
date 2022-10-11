@@ -1,23 +1,20 @@
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 import React from 'react';
 import {
-  View,
-  Text,
-  SafeAreaView,
   Keyboard,
+  SafeAreaView,
   ScrollView,
-  Alert,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-
-import COLOURS from '../conts/colours';
+import {addUserDetails} from '../apiService';
 import BigButton from '../components/BigButton';
 import Input from '../components/Input';
-import Loader from '../components/Loader';
-import auth from '@react-native-firebase/auth';
-import RadioButtons from '../components/RadioButtons';
-import {addUserDetails} from '../apiService';
+import COLOURS from '../conts/colours';
 import {FONTS} from '../conts/theme';
+
+/* Sign up screen. */
 const Signup = ({navigation}) => {
   const [inputs, setInputs] = React.useState({
     email: '',
@@ -26,13 +23,11 @@ const Signup = ({navigation}) => {
     phone: '',
     password: '',
     hours: '',
+    age: '',
   });
   const [errors, setErrors] = React.useState({});
-  const [loading, setLoading] = React.useState(false);
 
-  // const childToParent = isAdmin => {
-  //   setIsAdmin(isAdmin);
-  // };
+  /* Called if validate is successful. Adds user to authentication database and main database. */
   const handleSignUp = () => {
     auth()
       .createUserWithEmailAndPassword(inputs.email, inputs.password)
@@ -62,11 +57,11 @@ const Signup = ({navigation}) => {
             'password',
           );
         }
-
-        console.error(error);
       });
   };
 
+  /* Called when the user presses submit button. Checks that all fields are
+   filled out and that the user is not under 18. */
   const validate = () => {
     Keyboard.dismiss();
     let isValid = true;
@@ -94,36 +89,33 @@ const Signup = ({navigation}) => {
       handleError('Please enter a password.', 'password');
       isValid = false;
     }
+    if (!inputs.password) {
+      handleError('Please enter your age.', 'age');
+      isValid = false;
+    }
+    if (parseInt(inputs.age) < 18) {
+      alert('You must be 18 or over to use this app.');
+      isValid = false;
+    }
 
     if (isValid) {
       handleSignUp();
     }
   };
 
-  // const register = () => {
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     try {
-  //       setLoading(false);
-  //       AsyncStorage.setItem('userData', JSON.stringify(inputs));
-  //       navigation.navigate('LoginScreen');
-  //     } catch (error) {
-  //       Alert.alert('Error', 'Something went wrong');
-  //     }
-  //   }, 3000);
-  // };
-
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
+
+  /* Called by validate. Adds error to errors state variable in order to notify user of error. */
   const handleError = (error, input) => {
     setErrors(prevState => ({...prevState, [input]: error}));
   };
+
   return (
-    <SafeAreaView style={{backgroundColor: COLOURS.white, flex: 1}}>
-      <Loader visible={loading} />
-      <ScrollView
-        contentContainerStyle={{paddingTop: 50, paddingHorizontal: 20}}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.contentContainerStyle}>
         <Text style={FONTS.h1}>Register</Text>
         <Text style={FONTS.h2}>Enter Your Details to Register</Text>
         <View style={{marginVertical: 20}}>
@@ -182,6 +174,18 @@ const Signup = ({navigation}) => {
             value={inputs.password}
             password
           />
+          <Input
+            keyboardType="numeric"
+            onChangeText={text => handleOnchange(text, 'age')}
+            onFocus={() => handleError(null, 'age')}
+            iconName="cake"
+            iconFocused="cake"
+            label="Age"
+            placeholder="Enter your age"
+            error={errors.age}
+            value={inputs.age}
+            entypo
+          />
 
           <BigButton title="Register" onPress={validate} />
           <View style={{flex: 1, alignItems: 'center'}}>
@@ -190,7 +194,7 @@ const Signup = ({navigation}) => {
               Already have an account?{' '}
               <Text
                 onPress={() => navigation.navigate('Login')}
-                style={styles.link}>
+                style={FONTS.smallBlue}>
                 Log in
               </Text>
             </Text>
@@ -207,6 +211,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textDecorationLine: 'underline',
   },
+  contentContainerStyle: {paddingTop: 70, paddingHorizontal: 20},
+  container: {backgroundColor: COLOURS.white, flex: 1},
 });
 
 export default Signup;

@@ -3,9 +3,9 @@ import {View, StyleSheet} from 'react-native';
 import {RadioButton, Text} from 'react-native-paper';
 import COLOURS from '../conts/colours';
 import {APPSTYLES} from '../conts/theme';
-const RadioButtons = ({onValueChange, value}) => {
-  // const [value, setValue] = React.useState('first');
 
+/* Radio buttons for CreateTeam screen */
+const RadioButtons = ({onValueChange, value}) => {
   return (
     <View style={styles.container}>
       <Text style={APPSTYLES.inputLabel}>I want to...</Text>
@@ -39,8 +39,6 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     backgroundColor: COLOURS.light,
-    // paddingHorizontal: 15,
-    // paddingVertical: 15,
     borderRadius: 10,
   },
 });

@@ -1,40 +1,24 @@
-import React, {useState} from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  Alert,
-  Modal,
-  Pressable,
-} from 'react-native';
-import {userIsAdmin} from '../apiService';
-import COLOURS from '../conts/colours';
-import {database} from '../apiService';
-import {APPSTYLES, FONTS} from '../conts/theme';
+import {parseISO} from 'date-fns';
 import format from 'date-fns/format';
-import {changeRequestStatus} from '../apiService';
-import {UserName} from './UserName';
-import {isSameDay, parseISO} from 'date-fns';
-import {BIGCLOCK, DOWNARROW, SMALLNEXT} from '../conts/icons';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {database} from '../apiService';
+import COLOURS from '../conts/colours';
+import {SMALLNEXT} from '../conts/icons';
+import {FONTS} from '../conts/theme';
+import UserName from './UserName';
 
+/* Shift assignment component displayed as part of the rota details. */
 const ShiftItem = ({navigation, employee, shift}) => {
-  const [employeeName, setEmployeeName] = useState();
   const [employeeAbbrevName, setEmployeeAbbrevName] = useState();
   const [employeeColour, setEmployeeColour] = useState();
 
-  const [modalVisible, setModalVisible] = useState(false);
-
+  // Finding employee colour and name for the UserName component
   React.useEffect(() => {
     database
       .ref('/users/' + employee)
       .once('value')
       .then(snapshot => {
-        setEmployeeName(
-          snapshot.child('firstname').val() +
-            ' ' +
-            snapshot.child('lastname').val(),
-        );
         setEmployeeAbbrevName(
           snapshot.child('firstname').val() +
             ' ' +
@@ -70,12 +54,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  userNameContainer: {
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // justifyContent: 'space-between',
-  },
-
   textStyle: {
     color: 'white',
     fontWeight: 'bold',

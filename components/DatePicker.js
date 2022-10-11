@@ -1,24 +1,28 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import COLOURS from '../conts/colours';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {format} from 'date-fns/format';
 import {formatISO} from 'date-fns';
 
+/* Date and time picker form field */
 const DatePicker = ({label, timeRequired, dateToParent}) => {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
 
   async function onChangeTime(event, value) {
     await setTime(value);
+    // Sends chosen date to parent form
     dateToParent(formatDate());
   }
 
   async function onChangeDate(event, value) {
     await setDate(value);
+    // Sends chosen date to parent form
     dateToParent(formatDate());
   }
 
+  /* Takes the date part of the date input and the time part 
+of the time input and combines them into one date. */
   formatDate = () => {
     const mydate =
       formatISO(date, {representation: 'date'}) +
@@ -26,6 +30,7 @@ const DatePicker = ({label, timeRequired, dateToParent}) => {
       formatISO(time, {representation: 'time'});
     return mydate;
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>

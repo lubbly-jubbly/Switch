@@ -1,15 +1,17 @@
-import React from 'react';
-import {Text, View, SafeAreaView, Keyboard} from 'react-native';
-import Input from '../components/Input';
-import BigButton from '../components/BigButton';
-import COLOURS from '../conts/colours';
 import auth from '@react-native-firebase/auth';
+import React from 'react';
+import {Keyboard, SafeAreaView, Text, View} from 'react-native';
+import BigButton from '../components/BigButton';
+import Input from '../components/Input';
+import COLOURS from '../conts/colours';
 import {FONTS} from '../conts/theme';
 
+/* Forgot password screen. */
 const ForgotPassword = () => {
   const [inputs, setInputs] = React.useState({email: ''});
   const [errors, setErrors] = React.useState({});
 
+  /* Called if validate is successful. Sends user password reset email. */
   const handlePasswordReset = Email => {
     auth()
       .sendPasswordResetEmail(Email, null)
@@ -34,6 +36,7 @@ const ForgotPassword = () => {
       });
   };
 
+  /* Called when the user presses submit button. Checks that field is filled out. */
   const validate = async () => {
     Keyboard.dismiss();
     let isValid = true;
@@ -46,10 +49,12 @@ const ForgotPassword = () => {
     }
   };
 
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
 
+  /* Called by validate. Adds error to errors state variable in order to notify user of error. */
   const handleError = (error, input) => {
     setErrors(prevState => ({...prevState, [input]: error}));
   };
@@ -72,7 +77,7 @@ const ForgotPassword = () => {
             placeholder="Enter your email address"
             error={errors.email}
           />
-          <BigButton title="Send password reset email" onPress={validate} />
+          <BigButton title="Email me" onPress={validate} />
         </View>
       </View>
     </SafeAreaView>

@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import COLOURS from '../conts/colours';
 import {SIZES} from '../conts/theme';
 
-export const UserName = ({name, colour}) => {
+/* Name component with background corresponding to user's assigned colour. */
+const UserName = ({name, colour}) => {
   return (
     <View style={{backgroundColor: colour, borderRadius: 10, marginRight: 8}}>
       <Text
@@ -18,3 +19,4 @@ export const UserName = ({name, colour}) => {
     </View>
   );
 };
+export default UserName;

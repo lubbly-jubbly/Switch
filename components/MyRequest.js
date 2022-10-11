@@ -1,198 +1,130 @@
-import React, {useState} from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  Alert,
-  Modal,
-  Pressable,
-} from 'react-native';
-import {userIsAdmin} from '../apiService';
-import COLOURS from '../conts/colours';
-import {database} from '../apiService';
-import {FONTS, SIZES} from '../conts/theme';
 import format from 'date-fns/format';
-import {changeRequestStatus} from '../apiService';
-import parseISO from 'date-fns/parseISO';
 import isSameDay from 'date-fns/isSameDay';
-import {UserName} from './UserName';
+import parseISO from 'date-fns/parseISO';
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import COLOURS from '../conts/colours';
+import {BIGCLOCK, DOWNARROW, REPEAT, SMALLNEXT} from '../conts/icons';
+import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
 
+/* Request component displayed in employee Requests tab */
 const MyRequest = ({navigation, inputs}) => {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const handleRejectRequest = () => {
-    changeRequestStatus('rejected', inputs.Id);
-    setModalVisible(!modalVisible);
-  };
-
-  const handleAcceptRequest = () => {
-    changeRequestStatus('accepted', inputs.Id);
-    setModalVisible(!modalVisible);
-  };
-
-  function dateSwitch(sameDay, repeat) {
-    switch (sameDay) {
-      case true:
-        switch (repeat) {
-          case 'never':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee do MMM') +
-          //   ', ' +
-          //   '\n' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-          case 'monthly':
-            return (
-              <View>
-                <Text style={FONTS.h3}>
-                  {format(parseISO(inputs.starts), 'do')},
-                </Text>
-
-                <Text style={{color: COLOURS.darkGrey}}>
-                  {format(parseISO(inputs.starts), 'p')} -
-                  {format(parseISO(inputs.ends), 'p')}
-                </Text>
-              </View>
-            );
-          case 'fortnightly':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee') +
-          //   ', ' +
-          //   '\n' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-          case 'weekly':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee') +
-          //   ', ' +
-          //   '\n' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-          case 'daily':
-          // return (
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-        }
-
-      case false:
-        switch (repeat) {
-          case 'never':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee do MMM') +
-          //   ' at ' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'eeee do MMM') +
-          //   ' at ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-          case 'monthly':
-          // return (
-          //   format(parseISO(inputs.starts), 'do') +
-          //   ' at ' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   '\n' +
-          //   format(parseISO(inputs.ends), 'do') +
-          //   ' at ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-          case 'fortnightly':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee') +
-          //   ' at ' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'eeee') +
-          //   ' at ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-          case 'weekly':
-          // return (
-          //   format(parseISO(inputs.starts), 'eeee') +
-          //   ' at ' +
-          //   format(parseISO(inputs.starts), 'p') +
-          //   ' - ' +
-          //   format(parseISO(inputs.ends), 'eeee') +
-          //   ' at ' +
-          //   format(parseISO(inputs.ends), 'p')
-          // );
-        }
-    }
-  }
-
   return (
-    <View>
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
-            <Text style={FONTS.p3}>{inputs.reason}</Text>
-            <Text>{inputs.starts}</Text>
-            <Text>{inputs.ends}</Text>
-            {inputs.allDay ? <Text>All day</Text> : null}
-            <Text>{inputs.repeat}</Text>
+    <View style={APPSTYLES.itemContainer}>
+      <Text style={FONTS.modalText}>{inputs.reason}</Text>
 
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => handleRejectRequest()}>
-              <Text style={styles.textStyle}>Reject Request</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => handleAcceptRequest()}>
-              <Text style={styles.textStyle}>Accept Request</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+      <View style={styles.dateContainer}>
+        <View>
+          {isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)) ? (
+            <View style={[styles.singleDayDateContainer, styles.textBubble]}>
+              <BIGCLOCK />
+              <Text style={FONTS.body3}>
+                {format(parseISO(inputs.starts), 'eee d MMM')}
+                {'  '}
+              </Text>
 
-      <TouchableOpacity
-        style={styles.container}
-        onPress={() => setModalVisible(true)}>
-        {/* <View style={styles.infoContainer}> */}
-        <View style={{flexDirection: 'row'}}>
-          <Text style={FONTS.p3}>{inputs.reason}</Text>
-        </View>
-        <View style={styles.dateContainer}>
-          <View>
-            {dateSwitch(
-              isSameDay(parseISO(inputs.starts), parseISO(inputs.ends)),
-              inputs.repeat,
-            )}
-          </View>
-          {inputs.allDay ? <Text>All day</Text> : null}
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={[APPSTYLES.timeText, FONTS.body3]}>
+                  {format(parseISO(inputs.starts), 'p')}
+                </Text>
+                <SMALLNEXT />
+                {!inputs.isAllDay ? (
+                  <Text style={[APPSTYLES.timeText, FONTS.body3]}>
+                    {format(parseISO(inputs.ends), 'p')}
+                  </Text>
+                ) : null}
+              </View>
+            </View>
+          ) : (
+            <View style={styles.multiDayDateContainer}>
+              <DOWNARROW />
+              <View>
+                <View style={[styles.dateAndTime, styles.textBubble]}>
+                  <Text style={FONTS.body3}>
+                    {format(parseISO(inputs.starts), 'eee d MMM')}
+                    {'  '}
+                  </Text>
+                  {!inputs.isAllDay ? (
+                    <Text style={[APPSTYLES.timeText, FONTS.body3]}>
+                      {format(parseISO(inputs.starts), 'p')}
+                    </Text>
+                  ) : null}
+                </View>
+
+                <View style={[styles.dateAndTime, styles.textBubble]}>
+                  <Text style={FONTS.body3}>
+                    {format(parseISO(inputs.ends), 'eee d MMM')}
+                    {'  '}
+                  </Text>
+                  {!inputs.isAllDay ? (
+                    <Text style={[APPSTYLES.timeText, FONTS.body3]}>
+                      {format(parseISO(inputs.ends), 'p')}
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
+            </View>
+          )}
           {inputs.repeat !== 'never' ? (
-            <Text>Repeat: {inputs.repeat}</Text>
+            <View style={styles.repeatInfoContainer}>
+              <REPEAT />
+
+              <Text style={FONTS.body3}>
+                {inputs.repeat == 'daily'
+                  ? 'Daily'
+                  : inputs.repeat == 'weekly'
+                  ? 'Weekly'
+                  : inputs.repeat == 'fortnightly'
+                  ? 'Every two weeks'
+                  : inputs.repeat == 'monthly'
+                  ? 'Monthly'
+                  : null}
+              </Text>
+            </View>
           ) : null}
         </View>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  userNameContainer: {},
+  rowFlex: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  singleDayDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 0,
+  },
+  modalSingleDayDateContainer: {
+    flexDirection: 'column',
+    paddingVertical: 0,
+  },
+  multiDayDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 0,
+  },
+  dateAndTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: 138,
+  },
+  repeatInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 0,
+  },
+  textBubble: {
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
 
   container: {
     backgroundColor: COLOURS.light,
@@ -202,11 +134,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   infoContainer: {
-    // backgroundColor: COLOURS.grey,
     flex: 1,
   },
   dateContainer: {
-    // backgroundColor: COLOURS.red,
     flex: 1,
   },
   button: {

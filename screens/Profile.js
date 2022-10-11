@@ -1,59 +1,32 @@
-import React, {useState} from 'react';
-import {
-  Text,
-  View,
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  Pressable,
-  Alert,
-  Modal,
-  TextInput,
-} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {firebase} from '@react-native-firebase/database';
-import EditTeam from './EditTeam';
-import COLOURS from '../conts/colours';
-import {APPSTYLES, FONTS, MODALSTYLES, SIZES} from '../conts/theme';
-import {database} from '../apiService';
-import {CANCEL, EDIT, EMAIL, PHONE} from '../conts/icons';
+import React, {useState} from 'react';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {} from 'react-native-paper';
-import {SmallButton} from '../components/SmallButton';
-import Input from '../components/Input';
+import {database} from '../apiService';
+import COLOURS from '../conts/colours';
+import {EDIT, EMAIL, PHONE} from '../conts/icons';
+import {APPSTYLES, SIZES} from '../conts/theme';
+import {handleSignOut} from '../authService';
+
+/* Profile tab first screen for employee. */
 const Profile = ({navigation}) => {
   const [userInfo, setUserInfo] = useState({});
   const [admin, setAdmin] = useState({});
-  const [inputs, setInputs] = React.useState({});
-  const [errors, setErrors] = React.useState({});
 
-  const [modalVisible, setModalVisible] = useState(null);
-
-  const handleSignOut = () => {
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
-  };
-
-  const handleOnchange = (text, input) => {
-    setInputs(prevState => ({...prevState, [input]: text}));
-  };
-  const handleError = (error, input) => {
-    setErrors(prevState => ({...prevState, [input]: error}));
-  };
-  console.log(inputs.hours);
   React.useEffect(() => {
     const user = auth().currentUser;
     const userid = user.uid;
     const userRef = database.ref('/users/' + userid);
 
+    // fetches user's info
     userRef.once('value').then(snapshot => {
       setUserInfo(snapshot.val());
-      setInputs(snapshot.val());
       const team = snapshot.child('team').val();
       database.ref('/teams/' + team).once('value', snapshot => {
         setUserInfo(info => ({...info, teamName: snapshot.val().name}));
       });
 
+      // fetches user's admin's info
       database
         .ref('/users/')
         .orderByChild('team')
@@ -67,9 +40,9 @@ const Profile = ({navigation}) => {
         });
     });
 
+    // listens for changes to user's node and updates view.
     const OnLoadingListener = userRef.on('value', snapshot => {
       setUserInfo(snapshot.val());
-      setInputs(snapshot.val());
       const team = snapshot.child('team').val();
       database.ref('/teams/' + team).once('value', snapshot => {
         setUserInfo(info => ({...info, teamName: snapshot.val().name}));
@@ -87,44 +60,6 @@ const Profile = ({navigation}) => {
           });
         });
     });
-    //   setTeam(snapshot.child('team').val());
-    //   const team = snapshot.child('team').val();
-    //   database.ref('/teams/' + team + '/joinCode').once('value', snapshot => {
-    //     setJoinCode(snapshot.val());
-    //   }),
-    //     database
-    //       .ref('/users/')
-    //       .orderByChild('team')
-    //       .equalTo(team)
-    //       .on('value', snapshot => {
-    //         setUsers([]);
-
-    //         snapshot.forEach(function (childSnapshot) {
-    //           if (childSnapshot.val().isAdmin) {
-    //             setUsers(users => [childSnapshot.val(), ...users]);
-    //           } else {
-    //             setUsers(users => [...users, childSnapshot.val()]);
-    //           }
-    //         });
-    //       });
-    // });
-
-    // const usersRef = database.ref('/users/');
-    // const OnLoadingListener = usersRef
-    //   .orderByChild('team')
-    //   .equalTo(team)
-    //   .on('value', snapshot => {
-    //     setUsers([]);
-
-    //     snapshot.forEach(function (childSnapshot) {
-    //       if (childSnapshot.val().isAdmin) {
-    //         setUsers(users => [childSnapshot.val(), ...users]);
-    //       } else {
-    //         setUsers(users => [...users, childSnapshot.val()]);
-    //       }
-    //     });
-    //   });
-
     return () => {
       userRef.off('value', OnLoadingListener);
     };
@@ -134,112 +69,10 @@ const Profile = ({navigation}) => {
     <View
       style={{backgroundColor: COLOURS.white, flex: 1, padding: SIZES.padding}}>
       <View>
-        <Modal
-          animationType="none"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(false);
-          }}>
-          <View style={MODALSTYLES.centeredView}>
-            <View style={MODALSTYLES.modalView}>
-              <View style={[APPSTYLES.modal, {flexDirection: 'column'}]}>
-                <Pressable
-                  onPress={() => {
-                    setModalVisible(false);
-                  }}
-                  style={{alignSelf: 'flex-end'}}>
-                  <CANCEL />
-                </Pressable>
-                <Text
-                  style={[
-                    FONTS.modalText,
-                    {textAlign: 'center', marginBottom: 15},
-                  ]}>
-                  Edit details
-                </Text>
-                <Text>Current Hours:</Text>
-                <View style={styles.inputContainer}>
-                  {/* <TextInput
-                    keyboardType="numeric"
-                    placeholder="New hours"
-                    placeholderTextColor={COLOURS.grey}
-                    style={{flex: 1}}
-                    // onChange={text => handleOnchange(text, 'employeesNeeded')}
-                    onChangeText={text => handleOnchange(text, 'hours')}
-                    value={userInfo.hours}
-                  /> */}
-
-                  <Input
-                    onChangeText={text => handleOnchange(text, 'firstname')}
-                    onFocus={() => handleError(null, 'firstname')}
-                    iconName="person-outline"
-                    iconFocused="person"
-                    label="First Name"
-                    placeholder="Enter your first name"
-                    error={errors.firstname}
-                    value={inputs.firstname}
-                  />
-
-                  <Input
-                    onChangeText={text => handleOnchange(text, 'lastname')}
-                    onFocus={() => handleError(null, 'lastname')}
-                    iconName="person-outline"
-                    iconFocused="person"
-                    label="Last Name"
-                    placeholder="Enter your last name"
-                    error={errors.lastname}
-                    value={inputs.lastname}
-                  />
-
-                  {/* <Input
-                    keyboardType="numeric"
-                    onChangeText={text => handleOnchange(text, 'hours')}
-                    onFocus={() => handleError(null, 'hours')}
-                    iconName="time-outline"
-                    iconFocused="time"
-                    label="Weekly hours"
-                    placeholder="Enter your weekly hours"
-                    error={errors.hours}
-                    value={inputs.hours.toString()}
-                  /> */}
-                  <Input
-                    onChangeText={text => handleOnchange(text, 'email')}
-                    onFocus={() => handleError(null, 'email')}
-                    iconName="mail-outline"
-                    iconFocused="mail"
-                    label="Email"
-                    value={inputs.email}
-                    placeholder="Enter your email address"
-                    error={errors.email}
-                  />
-
-                  <Input
-                    keyboardType="numeric"
-                    onChangeText={text => handleOnchange(text, 'phone')}
-                    onFocus={() => handleError(null, 'phone')}
-                    iconName="call-outline"
-                    iconFocused="call"
-                    label="Phone Number"
-                    placeholder="Enter your phone no"
-                    error={errors.phone}
-                    value={inputs.phone}
-                  />
-                </View>
-              </View>
-
-              <SmallButton
-                onPress={() => editHours(item.Id)}
-                title="Change Hours"
-              />
-            </View>
-          </View>
-        </Modal>
-
         <View style={[APPSTYLES.itemContainer, {marginVertical: 20}]}>
-          <View style={styles.rowFlex}>
+          <View style={[styles.rowFlex, styles.infoItem]}>
             <Text>
+              <Text style={styles.listText}>Name: </Text>
               {userInfo.firstname} {userInfo.lastname}
             </Text>
             <Pressable
@@ -256,54 +89,87 @@ const Profile = ({navigation}) => {
               <EDIT />
             </Pressable>
           </View>
-          {/* <View style={styles.infoListContainer}> */}
           <View style={styles.weeklyHoursContainer}>
             <Text style={[styles.weeklyHours, styles.infoItem]}>
-              Weekly hours: {userInfo.hours}
+              <Text style={styles.listText}>Weekly hours: </Text>
+              {userInfo.hours}
             </Text>
           </View>
-          {userInfo.phone !== undefined ? (
-            <View style={[styles.individualContactContainer, styles.infoItem]}>
+          <View style={styles.infoItem}>
+            <Text style={styles.listText}>Contact Details:</Text>
+            {userInfo.phone !== undefined ? (
+              <View
+                style={[
+                  styles.individualContactContainer,
+                  styles.contactInfoItem,
+                ]}>
+                <PHONE />
+                <Text style={styles.individualContact}>{userInfo.phone}</Text>
+              </View>
+            ) : null}
+
+            {userInfo.phone !== undefined ? (
+              <View
+                style={[
+                  styles.individualContactContainer,
+                  styles.contactInfoItem,
+                ]}>
+                <EMAIL />
+                <Text style={styles.individualContact}>{userInfo.email}</Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+      </View>
+      <View style={APPSTYLES.itemContainer}>
+        <Text style={[styles.infoItem]}>
+          <Text style={styles.listText}>Team:</Text> {userInfo.teamName}
+        </Text>
+
+        <Text style={[styles.infoItem]}>
+          <Text style={styles.listText}>Manager:</Text> {admin.firstname}{' '}
+          {admin.lastname}
+        </Text>
+        <View style={styles.infoItem}>
+          <Text style={styles.listText}>Contact Details:</Text>
+          {admin.phone !== undefined ? (
+            <View
+              style={[
+                styles.individualContactContainer,
+                styles.contactInfoItem,
+              ]}>
               <PHONE />
-              <Text style={styles.individualContact}>{userInfo.phone}</Text>
+              <Text style={styles.individualContact}>{admin.phone}</Text>
             </View>
           ) : null}
-
-          {userInfo.phone !== undefined ? (
-            <View style={[styles.individualContactContainer, styles.infoItem]}>
+          {admin.phone !== undefined ? (
+            <View
+              style={[
+                styles.individualContactContainer,
+                styles.contactInfoItem,
+              ]}>
               <EMAIL />
-              <Text style={styles.individualContact}>{userInfo.email}</Text>
+              <Text style={styles.individualContact}>{admin.email}</Text>
             </View>
           ) : null}
         </View>
       </View>
-      <View style={APPSTYLES.itemContainer}>
-        <Text>My Team</Text>
-        <Text style={[styles.infoItem]}>Team: {userInfo.teamName}</Text>
 
-        <Text>
-          Manager: {admin.firstname} {admin.lastname}
-        </Text>
-        <Text>Contact Details:</Text>
-        {admin.phone !== undefined ? (
-          <View style={[styles.individualContactContainer, styles.infoItem]}>
-            <PHONE />
-            <Text style={styles.individualContact}>{admin.phone}</Text>
-          </View>
-        ) : null}
-        {admin.phone !== undefined ? (
-          <View style={[styles.individualContactContainer, styles.infoItem]}>
-            <EMAIL />
-            <Text style={styles.individualContact}>{admin.email}</Text>
-          </View>
-        ) : null}
-      </View>
-      <Button
-        title="View Requests"
-        onPress={() => navigation.navigate('My Requests')}
+      <View
+        style={{
+          borderBottomColor: COLOURS.grey,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+        }}
       />
-
-      <Button title="Sign out" onPress={handleSignOut} />
+      <Pressable style={styles.button} onPress={handleSignOut}>
+        <Text style={styles.textStyle}>Sign Out</Text>
+      </Pressable>
+      <View
+        style={{
+          borderBottomColor: COLOURS.grey,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+        }}
+      />
     </View>
   );
 };
@@ -334,7 +200,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   infoItem: {
-    marginVertical: 5,
+    marginVertical: 10,
+  },
+  contactInfoItem: {
+    marginTop: 5,
   },
   weeklyHoursContainer: {
     flexDirection: 'row',
@@ -345,6 +214,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  button: {
+    marginTop: 0,
+    padding: 15,
+    elevation: 2,
+    marginHorizontal: 7,
+    flexDirection: 'row',
+  },
+  listText: {
+    fontWeight: 'bold',
   },
 });
 export default Profile;

@@ -1,95 +1,35 @@
-import React, {useState} from 'react';
-import {Alert, Pressable, SafeAreaView} from 'react-native';
-import {StyleSheet, Button, Text, View, ScrollView} from 'react-native';
-import Rota from '../components/Rota';
-import COLOURS from '../conts/colours';
-import TimeOffInfo from '../components/TimeOffInfo';
 import auth from '@react-native-firebase/auth';
-import {database} from '../apiService';
-import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
 import areIntervalsOverlapping from 'date-fns/areIntervalsOverlapping';
-import parseISO from 'date-fns/parseISO';
-import format from 'date-fns/format';
-import {EditDayShifts} from './ChooseShifts';
 import endOfDay from 'date-fns/endOfDay';
+import parseISO from 'date-fns/parseISO';
 import startOfDay from 'date-fns/startOfDay';
-import Shift from '../components/Shift';
-import {NEXT, PREVIOUS} from '../conts/icons';
+import React, {useState} from 'react';
+import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {database} from '../apiService';
 import ShiftItem from '../components/ShiftItem';
+import TimeOffInfo from '../components/TimeOffInfo';
+import COLOURS from '../conts/colours';
+import {NEXT, PREVIOUS} from '../conts/icons';
+import {APPSTYLES, FONTS, SIZES} from '../conts/theme';
+import {checkSameDay} from '../checkSameDay';
 
-export const checkSameDay = (startOfDay, endOfDay, item) => {
-  //set up day interval
-  // const startOfDay = new Date(day);
-  // const endOfDay = new Date(day);
-  // endOfDay.setHours(24, 59);
-  // console.log(endOfDay);
-
-  const itemStartDate = parseISO(item.starts);
-  const itemEndDate = parseISO(item.ends);
-
-  const checkRepeats = interval => {
-    for (let i = 0; i < 100; i++) {
-      if (
-        areIntervalsOverlapping(
-          {start: itemStartDate, end: itemEndDate},
-          {start: startOfDay, end: endOfDay},
-        )
-      ) {
-        return true;
-      }
-      itemStartDate.setDate(itemStartDate.getDate() + interval);
-      itemEndDate.setDate(itemEndDate.getDate() + interval);
-    }
-    return false;
-  };
-
-  switch (item.repeat) {
-    case 'never':
-      return areIntervalsOverlapping(
-        {start: parseISO(item.starts), end: parseISO(item.ends)},
-        {start: startOfDay, end: endOfDay},
-      );
-    case 'daily':
-      return checkRepeats(1);
-      break;
-    case 'weekly':
-      return checkRepeats(7);
-      break;
-    case 'fortnightly':
-      return checkRepeats(14);
-      break;
-    case 'monthly':
-      for (let i = 0; i < 50; i++) {
-        itemStartDate.setMonth(itemStartDate.getMonth() + 1);
-        itemEndDate.setMonth(itemEndDate.getMonth() + 1);
-
-        if (
-          areIntervalsOverlapping(
-            {start: itemStartDate, end: itemEndDate},
-            {start: startOfDay, end: endOfDay},
-          )
-        ) {
-          return true;
-        }
-      }
-      return false;
-  }
-};
-
+/* Day details screen. Contains rota and absence details for an individual day. */
 const Day = ({route, navigation}) => {
   const user = auth().currentUser;
-  const [userInfo, setUserInfo] = React.useState('');
-  const [userLookUp, setUserLookUp] = useState({});
+  /* Receives day parameter from page that it was navigated to from. */
   const {day} = route.params;
-
+  const [userInfo, setUserInfo] = React.useState('');
   const [absences, setAbsences] = useState([]);
   const [shifts, setShifts] = useState([]);
 
+  /* Called when user presses back chevron. Navigates to previous day. */
   const handlePreviousDayPress = () => {
     const daydate = new Date(day);
     daydate.setDate(daydate.getDate() - 1);
     navigation.navigate('Day', {day: daydate.toDateString()});
   };
+
+  /* Called when user presses forward chevron. Navigates to next day. */
   const handleNextDayPress = () => {
     const daydate = new Date(day);
     daydate.setDate(daydate.getDate() + 1);
@@ -101,7 +41,7 @@ const Day = ({route, navigation}) => {
     userRef.once('value').then(snapshot => {
       setUserInfo(snapshot.val());
       const teamid = snapshot.val().team;
-
+      // Fetches user info for all team members.
       const usersRef = database.ref('/users/');
       usersRef
         .orderByChild('team')
@@ -111,13 +51,9 @@ const Day = ({route, navigation}) => {
           snapshot.forEach(function (childSnapshot) {
             users.push(childSnapshot.val());
           });
-
-          // creating a user id look-up object
-          users.forEach(user => {
-            setUserLookUp(prevState => ({...prevState, [user['Id']]: user}));
-          });
         });
 
+      // Fetches all accepted time off requests for the team
       const requestsRef = database.ref('teams/' + teamid + '/requests/');
       requestsRef
         .orderByChild('status')
@@ -129,7 +65,7 @@ const Day = ({route, navigation}) => {
             setAbsences(absences => [...absences, childSnapshot.val()]);
           });
         });
-
+      // Fetches all shift info for the team
       const shiftsRef = database.ref('teams/' + teamid + '/rota/');
       shiftsRef.on('value', snapshot => {
         setShifts([]);
@@ -144,7 +80,7 @@ const Day = ({route, navigation}) => {
     const teamid = userInfo.team;
     const requestsRef = database.ref('teams/' + teamid + '/requests/');
     const shiftsRef = database.ref('teams/' + teamid + '/rota/');
-
+    // Listens for changes to requests node and updates view.
     const OnLoadingListener = requestsRef
       .orderByChild('status')
       .equalTo('accepted')
@@ -155,7 +91,7 @@ const Day = ({route, navigation}) => {
           setAbsences(absences => [...absences, childSnapshot.val()]);
         });
       });
-
+    // Listens for changes to shifts node and updates view.
     const ShiftsListener = shiftsRef.on('value', snapshot => {
       setShifts([]);
       snapshot.forEach(function (childSnapshot) {
@@ -164,16 +100,14 @@ const Day = ({route, navigation}) => {
         }
       });
     });
-    const count = 0;
     return () => {
-      setUserInfo({}); // This worked for me
+      setUserInfo({});
       userRef.off('value', OnLoadingListener);
       userRef.off('value', ShiftsListener);
     };
   }, []);
   return (
-    <ScrollView
-      style={{backgroundColor: COLOURS.white, padding: SIZES.padding}}>
+    <ScrollView style={styles.container}>
       <View style={styles.dateContainer}>
         <Pressable
           style={styles.dateBtn}
@@ -191,61 +125,59 @@ const Day = ({route, navigation}) => {
           <NEXT />
         </Pressable>
       </View>
-      <View></View>
       <View>
-        {/* <EditDayShifts day={day} /> */}
-        <View style={APPSTYLES.itemContainer}>
-          <Text style={FONTS.h2}>Rota</Text>
-
-          {shifts.map((shift, index) => (
+        <View style={APPSTYLES.itemContainerWhite}>
+          {shifts.length > 0 ? (
             <View>
-              {areIntervalsOverlapping(
-                {
-                  start: parseISO(shift.starts),
-                  end: parseISO(shift.ends),
-                },
-                {
-                  start: startOfDay(new Date(day)),
-                  end: endOfDay(new Date(day)),
-                },
-              ) ? (
+              <Text style={FONTS.h2}>Rota</Text>
+              {shifts.map((shift, index) => (
                 <View>
-                  {shift.assignedEmployees.map((employee, index) => (
-                    <View style={styles.shiftInfo}>
-                      <View
-                        style={{
-                          borderBottomColor: COLOURS.grey,
-                          borderBottomWidth: StyleSheet.hairlineWidth,
-                        }}
-                      />
-                      <ShiftItem employee={employee} shift={shift} />
+                  {/* Checks if shift is on this day; if so, it is displayed on the screen. */}
+                  {areIntervalsOverlapping(
+                    {
+                      start: parseISO(shift.starts),
+                      end: parseISO(shift.ends),
+                    },
+                    {
+                      start: startOfDay(new Date(day)),
+                      end: endOfDay(new Date(day)),
+                    },
+                  ) ? (
+                    <View>
+                      {shift.assignedEmployees.map((employee, index) => (
+                        <View style={styles.shiftInfo}>
+                          <View style={APPSTYLES.line} />
+                          <ShiftItem employee={employee} shift={shift} />
+                        </View>
+                      ))}
                     </View>
-                  ))}
+                  ) : null}
                 </View>
-              ) : null}
+              ))}
             </View>
-          ))}
+          ) : (
+            <View>
+              <Text style={FONTS.h2}>Rota to be confirmed.</Text>
+            </View>
+          )}
         </View>
       </View>
 
-      <View style={APPSTYLES.itemContainer}>
+      <View style={APPSTYLES.itemContainerWhite}>
         <View>
           <Text style={FONTS.h2}>Staff Absences</Text>
         </View>
         {absences.map((item, index) => (
           <View>
+            {/* Checks if absence is on this day; if so, it is displayed on the screen. */}
+
             {checkSameDay(
               startOfDay(new Date(day)),
               endOfDay(new Date(day)),
               item,
             ) ? (
               <View>
-                <View
-                  style={{
-                    borderBottomColor: COLOURS.grey,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                  }}
-                />
+                <View style={APPSTYLES.line} />
                 <TimeOffInfo inputs={item} />
               </View>
             ) : null}
@@ -257,9 +189,8 @@ const Day = ({route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: COLOURS.white,
-  },
+  container: {backgroundColor: COLOURS.white, padding: SIZES.padding},
+
   dateContainer: {
     flexDirection: 'row',
     justifyContent: 'center',

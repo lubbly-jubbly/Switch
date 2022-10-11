@@ -1,23 +1,21 @@
+import auth from '@react-native-firebase/auth';
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Alert} from 'react-native';
-import {Dialog, Portal, Paragraph} from 'react-native-paper';
-import BigButton from '../components/BigButton';
+import {Alert, Modal, StyleSheet, Text, View} from 'react-native';
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import auth from '@react-native-firebase/auth';
-import {handleSignOut} from '../authService';
-import {joinTeamWithJoinCode} from '../apiService';
-import COLOURS from '../conts/colours';
-import {APPSTYLES} from '../conts/theme';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import {SmallButton} from './SmallButton';
+import COLOURS from '../conts/colours';
+import {APPSTYLES, FONTS, MODALSTYLES} from '../conts/theme';
 Icon.loadFont();
 const CELL_COUNT = 6;
 
+/* Join code field component used in Create Team screen. */
 const EnterJoinCode = ({childToParent, error}) => {
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
@@ -25,25 +23,45 @@ const EnterJoinCode = ({childToParent, error}) => {
     value,
     setValue,
   });
-  // const [visible, setVisible] = React.useState(false);
-
-  // const changeDialog = () => setVisible(!visible);
-
-  const user = auth().currentUser;
-
-  // const handleCodeSubmit = () => {
-  //   joinTeamWithJoinCode(user.uid, value);
-  // };
+  const [modalVisible, setModalVisible] = useState(null);
 
   return (
     <View>
-      {/* <Portal>
-        <Dialog visible={visible} onDismiss={changeDialog}>
-          <Dialog.Content>
-            <Paragraph>heyyyy</Paragraph>
-          </Dialog.Content>
-        </Dialog>
-      </Portal> */}
+      {/* Help modal providing information on join code's location. */}
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(null);
+        }}>
+        <View style={MODALSTYLES.centeredView}>
+          <View style={MODALSTYLES.modalView}>
+            <View style={[APPSTYLES.modal, {flexDirection: 'column'}]}>
+              <Pressable
+                onPress={() => {
+                  setModalVisible(null);
+                  setHours(null);
+                }}
+                style={{alignSelf: 'flex-end'}}></Pressable>
+              <Text
+                style={[
+                  FONTS.modalText,
+                  {textAlign: 'center', marginBottom: 15},
+                ]}>
+                Ask your manager for your team's join code. They can find it in
+                the Profile section of their app.
+              </Text>
+            </View>
+
+            <SmallButton
+              onPress={() => setModalVisible(!modalVisible)}
+              title="OK   "
+            />
+          </View>
+        </View>
+      </Modal>
       <View style={styles.root}>
         <View
           style={{
@@ -52,12 +70,7 @@ const EnterJoinCode = ({childToParent, error}) => {
             alignItems: 'center',
           }}>
           <Text style={APPSTYLES.inputLabel}>Enter your team's join code.</Text>
-          <Pressable
-            onPress={() =>
-              Alert.alert(
-                "Your team's admin can find this information in .....",
-              )
-            }>
+          <Pressable onPress={() => setModalVisible(!modalVisible)}>
             <Icon
               name={'help-outline'}
               style={{
@@ -69,11 +82,9 @@ const EnterJoinCode = ({childToParent, error}) => {
           </Pressable>
         </View>
         <View style={styles.fieldRow}>
-          {/* <View style={APPSTYLES.itemContainer}> */}
           <CodeField
             ref={ref}
             {...props}
-            // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
             value={value}
             onChangeText={code => {
               setValue(code);
@@ -81,7 +92,6 @@ const EnterJoinCode = ({childToParent, error}) => {
             }}
             cellCount={CELL_COUNT}
             rootStyle={styles.codeFieldRoot}
-            keyboardType="number-pad"
             textContentType="oneTimeCode"
             renderCell={({index, symbol, isFocused}) => (
               <Text
@@ -103,20 +113,8 @@ const EnterJoinCode = ({childToParent, error}) => {
 };
 
 const styles = StyleSheet.create({
-  // root: {padding: 20},
   title: {fontSize: 15, color: COLOURS.grey},
-  // codeFieldRoot: {marginTop: 20},
   cell: {
-    // width: 40,
-    // height: 40,
-    // lineHeight: 38,
-    // fontSize: 24,
-    // borderWidth: 2,
-    // borderColor: '#00000030',
-    // textAlign: 'center',
-    // backgroundColor: COLOURS.light,
-    // borderRadius: 15,
-
     borderColor: COLOURS.red,
     width: 45,
     height: 45,

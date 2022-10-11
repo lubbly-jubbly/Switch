@@ -1,22 +1,14 @@
 import React, {useState} from 'react';
-import {
-  Text,
-  View,
-  TextInput,
-  Alert,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
-import COLOURS from '../conts/colours';
-import {useForm, Controller} from 'react-hook-form';
-import Input from '../components/Input';
-import BigButton from '../components/BigButton';
-import Toggle from '../components/Toggle';
-import RepeatPicker from '../components/RepeatPicker';
-import DatePicker from '../components/DatePicker';
+import {SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {submitTimeOff} from '../apiService';
+import BigButton from '../components/BigButton';
+import DatePicker from '../components/DatePicker';
+import Input from '../components/Input';
+import RepeatPicker from '../components/RepeatPicker';
+import Toggle from '../components/Toggle';
+import COLOURS from '../conts/colours';
 
+/* Mark time off screen (admin only) */
 const MarkTimeOff = ({navigation}) => {
   const [inputs, setInputs] = useState({
     reason: '',
@@ -27,24 +19,28 @@ const MarkTimeOff = ({navigation}) => {
     notes: '',
   });
 
+  /* Called when user submits absence. Adds absence to database */
   async function handleSubmit() {
     await submitTimeOff(null, inputs, 'accepted');
-    alert('request sent!');
+    alert('Absence marked!');
     navigation.goBack();
   }
 
+  /* Receives All-day toggle input */
   const childToParent = toggleEnabled => {
     handleOnchange(toggleEnabled, 'isAllDay');
-    //change start time in date
   };
 
+  /* Receives date picker input */
   const startDateToParent = date => {
     handleOnchange(date, 'starts');
   };
+  /* Receives date picker input */
   const endDateToParent = date => {
     handleOnchange(date, 'ends');
   };
 
+  /* Called when user edits a field. Adds input to inputs state variable. */
   const handleOnchange = (text, input) => {
     setInputs(prevState => ({...prevState, [input]: text}));
   };
@@ -86,11 +82,5 @@ const MarkTimeOff = ({navigation}) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: 'blue',
-  },
-});
 
 export default MarkTimeOff;

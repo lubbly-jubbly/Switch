@@ -1,10 +1,9 @@
-import React from 'react';
 import auth from '@react-native-firebase/auth';
 import {firebase} from '@react-native-firebase/database';
-import {generateTeamCode} from './teamCodes';
-import parseISO from 'date-fns/parseISO';
 import formatISO from 'date-fns/formatISO';
+import parseISO from 'date-fns/parseISO';
 import {USERCOLOURS} from './conts/colours';
+import {generateTeamCode} from './teamCodes';
 export const database = firebase
   .app()
   .database(
@@ -21,7 +20,7 @@ export const submitUser = (Id, Name, Position) => {
       //if user exists in the system
       key = Id;
     } else {
-      key = database //if user doesnt exist in the system,
+      key = database //if user doesnt exist in the system
         .ref()
         .push().key;
     }
@@ -54,24 +53,7 @@ export const editUserInfo = (id, inputs) => {
     lastname: inputs.lastname,
     hours: parseInt(inputs.hours),
     phone: inputs.phone,
-    email: inputs.email,
   });
-  firebase.auth().currentUser.updateEmail(inputs.email);
-  this.reauthenticate(currentPassword)
-    .then(() => {
-      var user = firebase.auth().currentUser;
-      user
-        .updateEmail(newEmail)
-        .then(() => {
-          console.log('Email updated!');
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    })
-    .catch(error => {
-      console.log(error);
-    });
 };
 
 export async function removeUserFromTeam(id) {
@@ -132,50 +114,48 @@ export function checkIfInTeam(user) {
 }
 
 export async function assignTeamToUser(id, teamid) {
+  // creates array of all possible user colours
   let possibleColours = [...USERCOLOURS];
+
   const users = await database
     .ref('/users/')
     .orderByChild('team')
     .equalTo(teamid)
     .once('value');
 
+  // removes all currently used colours from array
   users.forEach(function (childSnapshot) {
     const index = possibleColours.indexOf(childSnapshot.val().colour);
     if (index > -1) {
-      // only splice array when item is found
-      possibleColours.splice(index, 1); // 2nd parameter means remove one item only
+      possibleColours.splice(index, 1);
     }
   });
-
+  // assigns colour in array to user
   const userColour = possibleColours[0];
 
   const userRef = database.ref('/users/' + id);
 
-  userRef
-    .update({
-      team: teamid,
-      colour: userColour,
-    })
-    .then(() => console.log('Data set.'));
+  userRef.update({
+    team: teamid,
+    colour: userColour,
+  });
 }
 
 export const addUserToTeam = (userid, teamid) => {
   const teamRef = database.ref('/teams/' + teamid + '/members/');
-  teamRef
-    .update({
-      [userid]: 'employee',
-    })
-    .then(() => console.log('Data set.'));
+  teamRef.update({
+    [userid]: 'employee',
+  });
 };
 
 export const joinTeamWithJoinCode = (userid, joinCode) => {
-  database
-    .ref('/joinCodes/' + joinCode)
-    .once('value', snapshot => {
+  database.ref('/joinCodes/' + joinCode).once('value', snapshot => {
+    if (snapshot.exists()) {
       addUserToTeam(userid, snapshot.val());
       assignTeamToUser(userid, snapshot.val());
-    })
-    .then(console.log('team joined.'));
+      console.log('tru');
+    } else console.log('hey');
+  });
 };
 
 export async function userIsAdmin(user) {
@@ -185,20 +165,10 @@ export async function userIsAdmin(user) {
   return info.val().isAdmin;
 }
 
-// export async function getUserInfo(user) {
-//   const userRef = database.ref('users/' + user.uid);
-//   const info = await userRef.once('value').then(snapshot => {
-//     return snapshot.val();
-//   });
-//   console.log('in fn ' + info);
-//   return info;
-// }
-
 export function createNewTeam(teamName, id) {
-  key = database //if user doesnt exist in the system,
-    .ref('/teams')
-    .push().key;
-  console.log(key);
+  key = database.ref('/teams').push().key;
+
+  // generate join code for the team
   const joinCode = generateTeamCode(key);
 
   const teamRef = database.ref('/teams/' + key);
@@ -234,7 +204,6 @@ export async function submitTimeOff(Id, inputs, status) {
     //change time to include whole day; ie start at 00:00 and end at 23:59
     inputs.starts = formatISO(parseISO(inputs.starts).setHours(0, 0, 0));
     inputs.ends = formatISO(parseISO(inputs.ends).setHours(23, 59, 0));
-    console.log('end dateeee' + inputs.starts + inputs.ends);
   }
 
   return new Promise(function (resolve, reject) {
@@ -243,7 +212,7 @@ export async function submitTimeOff(Id, inputs, status) {
       //if user exists in the system
       key = Id;
     } else {
-      key = database //if user doesnt exist in the system,
+      key = database //if user doesnt exist in the system
         .ref()
         .push().key;
     }
@@ -277,26 +246,13 @@ export async function changeRequestStatus(status, id) {
   });
 }
 
-// export async function getUserInfo(userInfoRetrieved) {
-//   const userInfo = {};
-//   const snapshot = await userRef.once('value');
-//   userInfo = snapshot.val();
-//   userInfoRetrieved(userInfo);
-// }
-
 export async function submitRegularShift(day, inputs) {
   const userInfo = await userRef.once('value');
   const teamid = userInfo.val().team;
 
-  // database.ref('teams/' + teamid + '/regularShifts/' + day).update({
-  //   [day]: inputs,
-  // });
-
   return new Promise(function (resolve, reject) {
     let key;
-    key = database //if user doesnt exist in the system,
-      .ref()
-      .push().key;
+    key = database.ref().push().key;
 
     database
       .ref('teams/' + teamid + '/regularShifts/' + day + '/' + key)
@@ -308,39 +264,4 @@ export async function submitRegularShift(day, inputs) {
         reject(err);
       });
   });
-}
-
-export async function getTotalHours() {
-  const user = auth().currentUser;
-  const userid = user.uid;
-  const userRef = database.ref('/users/' + userid);
-  const userInfo = await userRef.once('value');
-  const teamid = userInfo.val().team;
-
-  let totalHrs = 0;
-  const users = await database
-    .ref('/users/')
-    .orderByChild('team')
-    .equalTo(teamid)
-    .once('value');
-
-  users.forEach(function (childSnapshot) {
-    totalHrs += childSnapshot.val().hours;
-  });
-  setTotalHours(totalHrs);
-}
-
-export function submitRota() {
-  database
-    .ref('/users/' + '3yzkuik0pFhS0XobkdDasubGxz42' + '/')
-    .update({
-      firstname: 'bob',
-    })
-    .then(() => console.log('hellooo'));
-}
-
-export function assignColourToUser() {
-  //navigate to user
-  //
-  database.ref();
 }

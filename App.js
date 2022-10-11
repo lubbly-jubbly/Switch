@@ -1,57 +1,34 @@
-import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  Button,
-  Alert,
-  Platform,
-} from 'react-native';
-import Rota from './components/Rota';
-import RotaPage from './screens/RotaPage';
-import RequestTimeOff from './screens/RequestTimeOff';
-import Day from './screens/Day';
-import Home from './screens/Home';
-import RequestsAdmin from './screens/RequestsAdmin';
-import Profile from './screens/Profile';
-import Login from './screens/Login';
-import Signup from './screens/Signup';
-import ForgotPassword from './screens/ForgotPassword';
-import EditTeam from './screens/EditTeam';
-import EditDetails from './screens/EditDetails';
-import HomeAdmin from './screens/HomeAdmin';
-import ProfileAdmin from './screens/ProfileAdmin';
-import {
-  useDimensions,
-  useDeviceOrientation,
-} from '@react-native-community/hooks';
-import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import auth from '@react-native-firebase/auth';
-import EnterJoinCode from './screens/EnterJoinCode';
-import CreateTeam from './screens/CreateTeam';
-import {checkIfInTeam, userIsAdmin} from './apiService';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
+import {LogBox} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {database} from './apiService';
 import COLOURS from './conts/colours';
 import ChooseShifts from './screens/ChooseShifts';
-import MyRequests from './screens/Requests';
-import Requests from './screens/Requests';
-import RotaPageAdmin from './screens/RotaPageAdmin';
+import CreateTeam from './screens/CreateTeam';
+import Day from './screens/Day';
+import EditDetails from './screens/EditDetails';
+import EditTeam from './screens/EditTeam';
+import ForgotPassword from './screens/ForgotPassword';
+import Login from './screens/Login';
 import MarkTimeOff from './screens/MarkTimeOff';
+import Profile from './screens/Profile';
+import ProfileAdmin from './screens/ProfileAdmin';
+import Requests from './screens/Requests';
+import RequestsAdmin from './screens/RequestsAdmin';
+import RequestTimeOff from './screens/RequestTimeOff';
+import RotaPage from './screens/RotaPage';
+import RotaPageAdmin from './screens/RotaPageAdmin';
+import Signup from './screens/Signup';
+import Home from './screens/Home';
+
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 Ionicons.loadFont();
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    border: 'transparent',
-  },
-};
 const RotaStack = createNativeStackNavigator();
 const RequestsStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -62,7 +39,6 @@ const Tab = createBottomTabNavigator();
 
 const App = () => {
   const [initializing, setInitializing] = useState(true);
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState();
   const [userInfo, setUserInfo] = useState({
     isAdmin: '',
@@ -73,7 +49,6 @@ const App = () => {
     setUser(user);
     if (initializing) setInitializing(false);
     if (user) {
-      setLoading(true);
       const userRef = database.ref('users/' + user.uid);
 
       userRef.once('value').then(snapshot => {
@@ -81,7 +56,6 @@ const App = () => {
           isAdmin: snapshot.val().isAdmin,
           team: snapshot.val().team,
         });
-        setLoading(false);
       });
     } else {
       setUserInfo({});
@@ -177,6 +151,7 @@ const App = () => {
       return (
         <ProfileStack.Navigator initialRouteName="Profile">
           <ProfileStack.Screen name="Profile" component={ProfileAdmin} />
+          <ProfileStack.Screen name="Edit Details" component={EditDetails} />
           <ProfileStack.Screen name="Edit Team" component={EditTeam} />
           <ProfileStack.Screen name="Choose Shifts" component={ChooseShifts} />
         </ProfileStack.Navigator>
@@ -187,7 +162,6 @@ const App = () => {
           <ProfileStack.Screen name="Profile" component={Profile} />
 
           <ProfileStack.Screen name="Edit Details" component={EditDetails} />
-          <ProfileStack.Screen name="My Requests" component={MyRequests} />
         </ProfileStack.Navigator>
       );
     }
@@ -234,11 +208,7 @@ const App = () => {
         })}>
         <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Rota" component={RotaStackScreen} />
-        <Tab.Screen
-          name="Requests"
-          component={RequestsStackScreen}
-          options={{tabBarBadge: 3}}
-        />
+        <Tab.Screen name="Requests" component={RequestsStackScreen} />
         <Tab.Screen name="Profile" component={ProfileStackScreen} />
       </Tab.Navigator>
     );

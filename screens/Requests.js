@@ -1,12 +1,12 @@
-import React, {useEffect} from 'react';
-import {Text, ScrollView, View} from 'react-native';
-import {createRota} from '../createRota';
+import auth from '@react-native-firebase/auth';
+import React from 'react';
+import {ScrollView, Text, View} from 'react-native';
+import {database} from '../apiService';
 import MyRequest from '../components/MyRequest';
 import COLOURS from '../conts/colours';
 import {FONTS, SIZES} from '../conts/theme';
-import auth from '@react-native-firebase/auth';
-import {database} from '../apiService';
 
+/*  Requests tab for employee. */
 const Requests = () => {
   const user = auth().currentUser;
   const [userInfo, setUserInfo] = React.useState({});
@@ -19,7 +19,7 @@ const Requests = () => {
       setUserInfo(snapshot.val());
       const teamid = snapshot.val().team;
 
-      //get requests
+      // Fetches requests sent by user
       const requestsRef = database.ref('teams/' + teamid + '/requests/');
       requestsRef
         .orderByChild('sender')
@@ -35,6 +35,7 @@ const Requests = () => {
 
     const teamid = userInfo.team;
     const requestsRef = database.ref('teams/' + teamid + '/requests/');
+    // Listens for changes to requests node and updates view.
     const RequestsListener = requestsRef
       .orderByChild('sender')
       .equalTo(user.uid)
@@ -47,7 +48,7 @@ const Requests = () => {
       });
 
     return () => {
-      setUserInfo({}); // This worked for me
+      setUserInfo({});
       userRef.off('value', RequestsListener);
     };
   }, []);
@@ -55,32 +56,37 @@ const Requests = () => {
   return (
     <ScrollView
       style={{backgroundColor: COLOURS.white, flex: 1, padding: SIZES.padding}}>
-      <View style={{paddingBottom: 60}}>
-        <View>
-          <Text style={FONTS.h3}>Pending time-off requests</Text>
-        </View>
-        {requests.map((item, index) => (
+      {requests.length !== 0 ? (
+        <View style={{paddingBottom: 60}}>
+          <Text style={FONTS.h2}>My Time-Off Requests</Text>
           <View>
-            {item.status == 'pending' ? <MyRequest inputs={item} /> : null}
+            <Text style={FONTS.h3}>Pending</Text>
           </View>
-        ))}
-        <View>
-          <Text style={FONTS.h3}>Accepted time-off requests</Text>
-        </View>
-        {requests.map((item, index) => (
+          {requests.map((item, index) => (
+            <View>
+              {item.status == 'pending' ? <MyRequest inputs={item} /> : null}
+            </View>
+          ))}
           <View>
-            {item.status == 'accepted' ? <MyRequest inputs={item} /> : null}
+            <Text style={FONTS.h3}>Accepted</Text>
           </View>
-        ))}
-        <View>
-          <Text style={FONTS.h3}>Rejected time-off requests</Text>
-        </View>
-        {requests.map((item, index) => (
+          {requests.map((item, index) => (
+            <View>
+              {item.status == 'accepted' ? <MyRequest inputs={item} /> : null}
+            </View>
+          ))}
           <View>
-            {item.status == 'rejected' ? <MyRequest inputs={item} /> : null}
+            <Text style={FONTS.h3}>Rejected</Text>
           </View>
-        ))}
-      </View>
+          {requests.map((item, index) => (
+            <View>
+              {item.status == 'rejected' ? <MyRequest inputs={item} /> : null}
+            </View>
+          ))}
+        </View>
+      ) : (
+        <Text style={FONTS.h2}>No Time-Off Requests.</Text>
+      )}
     </ScrollView>
   );
 };

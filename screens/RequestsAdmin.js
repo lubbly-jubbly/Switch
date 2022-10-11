@@ -1,18 +1,17 @@
-import React, {useEffect} from 'react';
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import COLOURS from '../conts/colours';
-import Shift from '../components/Shift';
 import auth from '@react-native-firebase/auth';
+import React from 'react';
+import {ScrollView, Text, View} from 'react-native';
 import {database} from '../apiService';
 import TimeOffRequest from '../components/TimeOffRequest';
+import COLOURS from '../conts/colours';
 import {FONTS, SIZES} from '../conts/theme';
-import {getUserInfo} from '../apiService';
+
+/* Requests tab for admin. */
 const RequestsAdmin = () => {
   const user = auth().currentUser;
   const [userInfo, setUserInfo] = React.useState({});
   const [requests, setRequests] = React.useState([]);
+
 
   React.useEffect(() => {
     const userRef = database.ref('users/' + user.uid);
@@ -21,7 +20,7 @@ const RequestsAdmin = () => {
       setUserInfo(snapshot.val());
       const teamid = snapshot.val().team;
 
-      //get requests
+      // Fetches team's pending requests
       const requestsRef = database.ref('teams/' + teamid + '/requests/');
       requestsRef
         .orderByChild('status')
@@ -37,6 +36,7 @@ const RequestsAdmin = () => {
 
     const teamid = userInfo.team;
     const requestsRef = database.ref('teams/' + teamid + '/requests/');
+    // Listens for changes to requests node and updates view.
     const RequestsListener = requestsRef
       .orderByChild('status')
       .equalTo('pending')
@@ -48,7 +48,7 @@ const RequestsAdmin = () => {
         });
       });
     return () => {
-      setUserInfo({}); // This worked for me
+      setUserInfo({});
       userRef.off('value', RequestsListener);
     };
   }, []);
@@ -71,9 +71,5 @@ const RequestsAdmin = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  shiftContainer: {},
-});
 
 export default RequestsAdmin;

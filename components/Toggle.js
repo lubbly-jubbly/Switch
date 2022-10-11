@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import {View, Switch, StyleSheet, Text} from 'react-native';
+import {StyleSheet, Switch, Text, View} from 'react-native';
 import COLOURS from '../conts/colours';
 
+/* Toggle component used in forms. */
 const Toggle = ({label, childToParent}) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   label: {
     marginVertical: 5,
     fontSize: 14,
-    color: COLOURS.grey,
+    color: COLOURS.blue,
   },
   container: {
     height: 55,
